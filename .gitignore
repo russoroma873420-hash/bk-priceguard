@@ -135,3 +135,5 @@ config/settings.local.json
 *.swp
 *.swo
 *~
+
+temp_check/
