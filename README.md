@@ -40,12 +40,21 @@ venv\Scripts\activate
 # 3. Установить зависимости
 pip install -r requirements.txt
 
-# 4. Проверить конфигурацию
+# 4. Создать config/settings.json из шаблона
+copy config\settings.example.json config\settings.json
+# Затем отредактируйте config/settings.json и пропишите ваш TELEGRAM_TOKEN и TELEGRAM_CHAT_ID
+
+# 5. Проверить конфигурацию
 python scripts/validate_config.py
 
-# 5. Инициализировать базу данных
+# 6. Инициализировать базу данных
 python scripts/setup.py
 ```
+
+> ⚠️ **Безопасность:** `config/settings.json` исключён из git (через .gitignore),
+> чтобы ваш токен бота никогда не попал в репозиторий. Под версионным контролем
+> только `config/settings.example.json` с заглушками. Если когда-то токен
+> утечёт случайно, ротируйте его через @BotFather командой `/revoke`.
 
 ---
 

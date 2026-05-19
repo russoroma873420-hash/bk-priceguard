@@ -1,11 +1,11 @@
 {
-  "TELEGRAM_TOKEN": "Здесь_потом_впишу_токен",
-  "TELEGRAM_CHAT_ID": "Тут_chat_id",
+  "TELEGRAM_TOKEN": "YOUR_BOT_TOKEN_HERE",
+  "TELEGRAM_CHAT_ID": "YOUR_CHAT_ID_HERE",
   "TARGET_MARGIN_PCT": 20.0,
   "MIN_MARGIN_PCT": 15.0,
   "SLEEP_INTERVAL": 3600,
   "PRODUCTION_MODE": true,
-  "MOCK_TELEGRAM": true,
+  "MOCK_TELEGRAM": false,
   "MONITORS": [
     {
       "name": "Holod.su - Кондиционер Mitsubishi",

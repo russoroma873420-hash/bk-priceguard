@@ -125,6 +125,7 @@ dmypy.json
 # Project-specific
 data/
 config/secrets.json
+config/settings.json
 config/settings.local.json
 *.db
 *.sqlite
