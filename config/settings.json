@@ -1,0 +1,41 @@
+{
+  "TELEGRAM_TOKEN": "YOUR_BOT_TOKEN_HERE",
+  "TELEGRAM_CHAT_ID": "YOUR_CHAT_ID_HERE",
+  "TARGET_MARGIN_PCT": 20.0,
+  "MIN_MARGIN_PCT": 15.0,
+  "SLEEP_INTERVAL": 300,
+  "MONITORS": [
+    {
+      "name": "Example Store 1",
+      "url": "https://example.com/products",
+      "selectors": {
+        "product_name": "h1.product-title",
+        "price": "span.price",
+        "model_id": "div.model-id"
+      }
+    },
+    {
+      "name": "Example Store 2",
+      "url": "https://shop.example.com/items",
+      "selectors": {
+        "product_name": "div.item-name",
+        "price": "p.item-price",
+        "model_id": "span.item-code"
+      }
+    }
+  ],
+  "OUR_PRICES": {
+    "MODEL_001": 5000,
+    "MODEL_002": 7500,
+    "MODEL_003": 9000,
+    "MODEL_004": 12000
+  },
+  "DATABASE": {
+    "TYPE": "sqlite",
+    "PATH": "data/price_monitor.db"
+  },
+  "LOGGING": {
+    "LEVEL": "INFO",
+    "LOG_FILE": "data/price_monitor.log"
+  }
+}
