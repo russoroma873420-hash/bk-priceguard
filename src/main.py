@@ -14,7 +14,8 @@ from src.bot import TelegramNotifier, send_telegram
 from src.config_loader import load_settings
 from src.database import DatabaseManager
 from src.engine import calculate_price_delta, find_opportunities
-from src.real_scraper import scrape_real_product
+from src.playwright_scraper import get_price_with_browser
+from src.real_scraper import extract_price_from_text, scrape_real_product
 
 # Setup logging
 logging.basicConfig(
@@ -121,10 +122,13 @@ class PriceMonitor:
             logger.error(f"Error sending alert: {e}")
 
     def scrape_all_monitors(self) -> List[dict]:
-        """Scrape all configured monitors using real_scraper
+        """Scrape all configured monitors.
 
-        Returns:
-            List of scraped product data
+        Strategy:
+            1. Try requests-based real_scraper (fast, cheap).
+            2. If it fails with antibot/HTTP error, retry via playwright_scraper.
+            3. If both fail, record a stub result (success=False) and move on
+               without crashing.
         """
         self._print_safe("\n>>> Scraping all monitors (REAL MODE)...", "cyan")
         scraped_data = []
@@ -132,16 +136,16 @@ class PriceMonitor:
         for monitor in self.config['MONITORS']:
             monitor_name = monitor.get('name', 'Unknown')
             self._print_safe(f"  Scraping: {monitor_name}", "yellow")
+            self.stats['total_checks'] += 1
 
             try:
-                result = scrape_real_product(monitor, self.scraper_config)
-                self.stats['total_checks'] += 1
-
+                result = self._scrape_one(monitor)
                 if result['success']:
                     scraped_data.append(result)
                     stock_info = result.get('stock') or 'N/A'
+                    engine = result.get('engine', 'requests')
                     self._print_safe(
-                        f"    OK {result['price']:.0f} RUB - {stock_info}",
+                        f"    OK [{engine}] {result['price']:.0f} RUB - {stock_info}",
                         "green"
                     )
                 else:
@@ -162,11 +166,78 @@ class PriceMonitor:
                         )
 
             except Exception as e:
-                logger.error(f"Unexpected error scraping {monitor_name}: {e}")
+                # Never crash the whole cycle on a single monitor
+                logger.exception(f"Unexpected error scraping {monitor_name}")
                 self.stats['errors'] += 1
                 self._print_safe(f"    ERROR: {e}", "red")
 
         return scraped_data
+
+    def _scrape_one(self, monitor: Dict) -> Dict:
+        """Scrape a single monitor with requests-first, Playwright-fallback.
+
+        Returns the scrape result dict (same shape as scrape_real_product).
+        Never raises — failures come back as success=False stubs.
+        """
+        # 1) Fast path: requests-based scraper
+        result = scrape_real_product(monitor, self.scraper_config)
+        if result['success']:
+            result['engine'] = 'requests'
+            return result
+
+        # 2) Fallback: Playwright (real browser, handles JS + most antibots)
+        logger.info(f"Falling back to Playwright for {monitor.get('url')}")
+        self._print_safe("    -> retrying via Playwright...", "yellow")
+
+        text = None
+        try:
+            text = get_price_with_browser(
+                monitor.get('url', ''),
+                monitor.get('selectors', {}),
+            )
+        except Exception as e:
+            # get_price_with_browser is meant to be non-raising, but stay defensive
+            logger.error(f"Playwright fallback raised: {e}")
+
+        if not text:
+            # Both engines failed — return a stub, don't crash
+            return {
+                'url': monitor.get('url', ''),
+                'sku': monitor.get('sku', 'UNKNOWN'),
+                'price': 0.0,
+                'stock': '',
+                'name': '',
+                'success': False,
+                'error': result.get('error') or 'Playwright returned no text',
+                'error_type': result.get('error_type') or 'PLAYWRIGHT_EMPTY',
+                'engine': 'playwright',
+            }
+
+        price = extract_price_from_text(text)
+        if not price or price <= 0:
+            return {
+                'url': monitor.get('url', ''),
+                'sku': monitor.get('sku', 'UNKNOWN'),
+                'price': 0.0,
+                'stock': '',
+                'name': '',
+                'success': False,
+                'error': f"Playwright text could not be parsed as price: '{text[:60]}'",
+                'error_type': 'PLAYWRIGHT_PARSE_ERROR',
+                'engine': 'playwright',
+            }
+
+        return {
+            'url': monitor.get('url', ''),
+            'sku': monitor.get('sku', 'UNKNOWN'),
+            'price': price,
+            'stock': '',
+            'name': '',
+            'success': True,
+            'error': None,
+            'error_type': None,
+            'engine': 'playwright',
+        }
 
     def analyze_opportunities(self, scraped_data: List[dict]) -> List:
         """Analyze scraped data for price opportunities
