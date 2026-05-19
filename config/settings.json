@@ -1,34 +1,66 @@
 {
-  "TELEGRAM_TOKEN": "YOUR_BOT_TOKEN_HERE",
-  "TELEGRAM_CHAT_ID": "YOUR_CHAT_ID_HERE",
+  "TELEGRAM_TOKEN": "Здесь_потом_впишу_токен",
+  "TELEGRAM_CHAT_ID": "Тут_chat_id",
   "TARGET_MARGIN_PCT": 20.0,
   "MIN_MARGIN_PCT": 15.0,
-  "SLEEP_INTERVAL": 300,
+  "SLEEP_INTERVAL": 3600,
+  "PRODUCTION_MODE": true,
+  "MOCK_TELEGRAM": true,
   "MONITORS": [
     {
-      "name": "Example Store 1",
-      "url": "https://example.com/ac-model-001",
+      "name": "Holod.su - Кондиционер Mitsubishi",
+      "url": "https://holod.su/catalog/split-sistemy/mitsubishi-electric/",
+      "sku": "MODEL_001",
       "selectors": {
-        "product_name": "h1.product-title",
-        "price": "span.price",
-        "stock": "div.stock"
+        "price": "span.price-current",
+        "price_alt": "div.product-price",
+        "price_alt2": "h3.price-value",
+        "stock": "div.availability",
+        "product_name": "h1.product-title"
+      },
+      "headers": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8"
       }
     },
     {
-      "name": "Example Store 2",
-      "url": "https://shop.example.com/ac-003",
+      "name": "Technopoint - Кондиционер Daikin",
+      "url": "https://technopoint.ru/catalog/17a8eb7e16404e77/kondicionery-i-split-sistemy/",
+      "sku": "MODEL_002",
       "selectors": {
-        "product_name": "h1.item-name",
-        "price": "p.item-price",
-        "stock": "span.item-code"
+        "price": "span.price__current",
+        "price_alt": "div.product-buy__price",
+        "price_alt2": "span[data-price]",
+        "stock": "div.product-card__stock",
+        "product_name": "h1.product-card-top__title"
+      },
+      "headers": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8"
+      }
+    },
+    {
+      "name": "DNS-Shop - Кондиционер Samsung",
+      "url": "https://www.dns-shop.ru/category/17a8eb7e16404e77/kondicionery-i-split-sistemy/",
+      "sku": "MODEL_003",
+      "selectors": {
+        "price": "div.product-buy__price",
+        "price_alt": "span.product-min-price__min",
+        "price_alt2": "div[data-price]",
+        "stock": "div.order-avail-wrap",
+        "product_name": "h1.product-card-top__title"
+      },
+      "headers": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8"
       }
     }
   ],
   "OUR_PRICES": {
-    "MODEL_001": 5000,
-    "MODEL_002": 7500,
-    "MODEL_003": 9000,
-    "MODEL_004": 12000
+    "MODEL_001": 35000,
+    "MODEL_002": 42000,
+    "MODEL_003": 28000,
+    "MODEL_004": 55000
   },
   "DATABASE": {
     "TYPE": "sqlite",
@@ -37,5 +69,11 @@
   "LOGGING": {
     "LEVEL": "INFO",
     "LOG_FILE": "data/price_monitor.log"
+  },
+  "SCRAPER": {
+    "REQUEST_TIMEOUT": 15,
+    "RETRY_COUNT": 3,
+    "RETRY_DELAY": 5,
+    "DETECT_CLOUDFLARE": true
   }
 }

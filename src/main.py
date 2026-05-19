@@ -1,4 +1,4 @@
-"""Main monitoring orchestrator for BK-PriceGuard"""
+"""Main monitoring orchestrator for BK-PriceGuard (Production Mode)"""
 
 import logging
 import signal
@@ -10,11 +10,11 @@ from typing import Dict, List
 from rich.console import Console
 from rich.table import Table
 
-from src.bot import TelegramNotifier
+from src.bot import TelegramNotifier, send_telegram
 from src.config_loader import load_settings
 from src.database import DatabaseManager
-from src.engine import find_opportunities
-from src.scraper import scrape_product
+from src.engine import calculate_price_delta, find_opportunities
+from src.real_scraper import scrape_real_product
 
 # Setup logging
 logging.basicConfig(
@@ -27,16 +27,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Rich console for beautiful output (with Windows compatibility)
+# Rich console with Windows compatibility
 try:
     console = Console(legacy_windows=True, force_unicode=False)
 except TypeError:
-    # Fallback for older versions of rich
     console = Console()
 
 
+# Delta threshold for triggering alerts (percent)
+DELTA_THRESHOLD_PCT = 3.0
+
+
 class PriceMonitor:
-    """Main price monitoring orchestrator"""
+    """Main price monitoring orchestrator (Production Mode)"""
 
     def __init__(self, config_path: str = "config/settings.json"):
         """Initialize price monitor
@@ -50,12 +53,19 @@ class PriceMonitor:
             self.config['TELEGRAM_TOKEN'],
             str(self.config['TELEGRAM_CHAT_ID'])
         )
+
+        # Mock telegram mode — print [MOCK_SEND] instead of real send
+        self.mock_telegram = self.config.get('MOCK_TELEGRAM', True)
+        self.scraper_config = self.config.get('SCRAPER', {})
+
         self.running = True
         self.stats = {
             'total_checks': 0,
             'opportunities_found': 0,
             'dumping_alerts': 0,
             'advantage_alerts': 0,
+            'delta_alerts': 0,
+            'cloudflare_blocks': 0,
             'errors': 0,
             'cycle_count': 0
         }
@@ -64,54 +74,14 @@ class PriceMonitor:
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
 
-        logger.info("Price Monitor initialized")
+        logger.info("Price Monitor initialized (Production Mode)")
+        if self.mock_telegram:
+            logger.warning("MOCK_TELEGRAM mode is ON — alerts will not be sent to Telegram")
 
     def _signal_handler(self, signum, frame):
         """Handle shutdown signals gracefully"""
         logger.warning(f"Received signal {signum}, shutting down...")
         self.running = False
-
-    def scrape_all_monitors(self) -> List[dict]:
-        """Scrape all configured monitors
-
-        Returns:
-            List of scraped product data
-        """
-        self._print_safe("\n>>> Scraping all monitors...", "cyan")
-        scraped_data = []
-
-        for monitor in self.config['MONITORS']:
-            try:
-                monitor_name = monitor.get('name', 'Unknown')
-                url = monitor.get('url', '')
-                selectors = monitor.get('selectors', {})
-
-                if not url:
-                    logger.warning(f"Monitor {monitor_name} has no URL")
-                    continue
-
-                self._print_safe(f"  Scraping: {monitor_name}", "yellow")
-
-                result = scrape_product(url, selectors, use_mock=True)
-
-                if result['success']:
-                    # Map to SKU if possible
-                    sku = self._identify_sku_from_url(url)
-                    result['sku'] = sku
-                    scraped_data.append(result)
-                    self._print_safe(f"    OK {result['price']:.0f} - {result['stock']}", "green")
-                else:
-                    self._print_safe(f"    FAILED to scrape", "red")
-                    self.stats['errors'] += 1
-
-                self.stats['total_checks'] += 1
-
-            except Exception as e:
-                logger.error(f"Error scraping monitor {monitor.get('name')}: {e}")
-                self.stats['errors'] += 1
-                self._print_safe(f"    ERROR: {e}", "red")
-
-        return scraped_data
 
     def _print_safe(self, text: str, style: str = "") -> None:
         """Safe print that falls back to standard print on error"""
@@ -120,26 +90,83 @@ class PriceMonitor:
         except Exception:
             print(text)
 
-    def _identify_sku_from_url(self, url: str) -> str:
-        """Try to identify SKU from URL
+    def _send_alert(self, message: str, opportunity=None) -> None:
+        """Send alert via Telegram or mock-print
 
         Args:
-            url: Product URL
+            message: Alert message text
+            opportunity: Optional PriceOpportunity for structured send
+        """
+        if self.mock_telegram:
+            self._print_safe(f"[MOCK_SEND] {message}", "yellow")
+            logger.info(f"[MOCK_SEND] {message[:100]}")
+            return
+
+        try:
+            if opportunity:
+                success = self.notifier.notify_opportunity(opportunity)
+            else:
+                success = send_telegram(
+                    self.config['TELEGRAM_TOKEN'],
+                    str(self.config['TELEGRAM_CHAT_ID']),
+                    message
+                )
+
+            if success:
+                logger.info("Alert sent to Telegram")
+            else:
+                logger.warning("Failed to send Telegram alert")
+
+        except Exception as e:
+            logger.error(f"Error sending alert: {e}")
+
+    def scrape_all_monitors(self) -> List[dict]:
+        """Scrape all configured monitors using real_scraper
 
         Returns:
-            SKU identifier or 'UNKNOWN'
+            List of scraped product data
         """
-        # Simple heuristic: extract model number from URL
-        if 'model-001' in url or 'ac-model-001' in url:
-            return 'MODEL_001'
-        elif 'model-002' in url or 'ac-model-002' in url:
-            return 'MODEL_002'
-        elif 'model-003' in url or 'ac-003' in url:
-            return 'MODEL_003'
-        elif 'model-004' in url or 'ac-004' in url:
-            return 'MODEL_004'
-        else:
-            return 'UNKNOWN'
+        self._print_safe("\n>>> Scraping all monitors (REAL MODE)...", "cyan")
+        scraped_data = []
+
+        for monitor in self.config['MONITORS']:
+            monitor_name = monitor.get('name', 'Unknown')
+            self._print_safe(f"  Scraping: {monitor_name}", "yellow")
+
+            try:
+                result = scrape_real_product(monitor, self.scraper_config)
+                self.stats['total_checks'] += 1
+
+                if result['success']:
+                    scraped_data.append(result)
+                    stock_info = result.get('stock') or 'N/A'
+                    self._print_safe(
+                        f"    OK {result['price']:.0f} RUB - {stock_info}",
+                        "green"
+                    )
+                else:
+                    error_type = result.get('error_type', 'UNKNOWN')
+                    error_msg = result.get('error', 'Unknown error')
+
+                    if error_type == 'CLOUDFLARE_BLOCKED':
+                        self.stats['cloudflare_blocks'] += 1
+                        self._print_safe(
+                            f"    BLOCKED by anti-bot: {error_msg[:80]}",
+                            "red"
+                        )
+                    else:
+                        self.stats['errors'] += 1
+                        self._print_safe(
+                            f"    FAILED ({error_type}): {error_msg[:80]}",
+                            "red"
+                        )
+
+            except Exception as e:
+                logger.error(f"Unexpected error scraping {monitor_name}: {e}")
+                self.stats['errors'] += 1
+                self._print_safe(f"    ERROR: {e}", "red")
+
+        return scraped_data
 
     def analyze_opportunities(self, scraped_data: List[dict]) -> List:
         """Analyze scraped data for price opportunities
@@ -162,23 +189,47 @@ class PriceMonitor:
             self.config
         )
 
+        # Calculate delta-based alerts as well (delta > DELTA_THRESHOLD_PCT)
+        target_margin = self.config['TARGET_MARGIN_PCT']
+
+        for item in scraped_data:
+            sku = item.get('sku')
+            competitor_price = item.get('price', 0.0)
+
+            if not sku or sku not in self.config['OUR_PRICES']:
+                continue
+
+            our_cost = self.config['OUR_PRICES'][sku]
+            our_target_price = our_cost * (1 + target_margin / 100)
+
+            delta_pct = calculate_price_delta(competitor_price, our_target_price)
+
+            if abs(delta_pct) > DELTA_THRESHOLD_PCT:
+                self.stats['delta_alerts'] += 1
+                direction = "HIGHER" if delta_pct > 0 else "LOWER"
+                self._print_safe(
+                    f"  DELTA: {sku} competitor={competitor_price:.0f} "
+                    f"target={our_target_price:.0f} delta={delta_pct:+.1f}% ({direction})",
+                    "magenta"
+                )
+
         if opportunities:
             for opp in opportunities:
                 if opp.opportunity_type == "DUMPING":
                     self.stats['dumping_alerts'] += 1
                     self._print_safe(
                         f"  ALERT DUMPING: {opp.sku} "
-                        f"({opp.competitor_price:.0f}) "
+                        f"({opp.competitor_price:.0f} RUB) "
                         f"margin={opp.margin_pct:.1f}%",
-                        "red"
+                        "bold red"
                     )
                 else:
                     self.stats['advantage_alerts'] += 1
                     self._print_safe(
-                        f"  OK ADVANTAGE: {opp.sku} "
-                        f"({opp.competitor_price:.0f}) "
+                        f"  ADVANTAGE: {opp.sku} "
+                        f"({opp.competitor_price:.0f} RUB) "
                         f"margin={opp.margin_pct:.1f}%",
-                        "green"
+                        "bold green"
                     )
 
             self.stats['opportunities_found'] += len(opportunities)
@@ -188,7 +239,7 @@ class PriceMonitor:
         return opportunities
 
     def save_opportunities(self, opportunities: List) -> None:
-        """Save opportunities to database and send alerts
+        """Save opportunities to database and send Telegram alerts
 
         Args:
             opportunities: List of PriceOpportunity objects
@@ -196,7 +247,7 @@ class PriceMonitor:
         if not opportunities:
             return
 
-        self._print_safe("\n>>> Saving opportunities...", "cyan")
+        self._print_safe("\n>>> Saving opportunities and sending alerts...", "cyan")
 
         for opp in opportunities:
             # Save to database
@@ -211,13 +262,11 @@ class PriceMonitor:
 
             success = self.db.save_price(record)
             if success:
-                self._print_safe(f"  OK Saved {opp.sku}", "green")
+                self._print_safe(f"  OK Saved {opp.sku} to DB", "green")
 
-                # Send Telegram notification
-                if self.config['TELEGRAM_TOKEN'] != 'YOUR_BOT_TOKEN_HERE':
-                    self.notifier.notify_opportunity(opp)
-                else:
-                    logger.info(f"[MOCK] Would send alert for {opp.sku} to Telegram")
+                # Send alert (real or mock)
+                message = opp.format_message()
+                self._send_alert(message, opportunity=opp)
             else:
                 self._print_safe(f"  FAILED to save {opp.sku}", "red")
                 self.stats['errors'] += 1
@@ -234,6 +283,8 @@ class PriceMonitor:
             table.add_row("Opportunities", str(self.stats['opportunities_found']))
             table.add_row("  - Dumping Alerts", str(self.stats['dumping_alerts']))
             table.add_row("  - Our Advantages", str(self.stats['advantage_alerts']))
+            table.add_row("Delta Alerts (>3%)", str(self.stats['delta_alerts']))
+            table.add_row("Cloudflare Blocks", str(self.stats['cloudflare_blocks']))
             table.add_row("Errors", str(self.stats['errors']))
             table.add_row("Timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
@@ -245,6 +296,8 @@ class PriceMonitor:
             print(f"Opportunities: {self.stats['opportunities_found']}")
             print(f"  - Dumping: {self.stats['dumping_alerts']}")
             print(f"  - Advantage: {self.stats['advantage_alerts']}")
+            print(f"Delta Alerts (>3%): {self.stats['delta_alerts']}")
+            print(f"Cloudflare Blocks: {self.stats['cloudflare_blocks']}")
             print(f"Errors: {self.stats['errors']}")
             print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 
@@ -255,13 +308,13 @@ class PriceMonitor:
         self._print_safe(
             f"\n=== Cycle #{self.stats['cycle_count']} "
             f"({datetime.now().strftime('%H:%M:%S')}) ===",
-            "magenta"
+            "bold magenta"
         )
 
-        # Scrape all monitors
+        # Scrape all monitors (REAL — no mock fallback)
         scraped_data = self.scrape_all_monitors()
 
-        # Analyze for opportunities
+        # Analyze for opportunities (margin checks always run, regardless of mode)
         opportunities = self.analyze_opportunities(scraped_data)
 
         # Save and notify
@@ -270,24 +323,34 @@ class PriceMonitor:
         # Print summary
         self.print_cycle_summary()
 
-    def run(self, test_mode: bool = False) -> None:
+    def run(self, single_cycle: bool = False) -> None:
         """Main monitoring loop
 
         Args:
-            test_mode: Run only one cycle if True
+            single_cycle: If True, runs exactly one cycle and exits
+                (used by Windows Task Scheduler for hourly runs)
         """
-        logger.info("Starting price monitoring...")
-        print("BK-PriceGuard - Price Monitoring Started")
-        print(f"Target Margin: {self.config['TARGET_MARGIN_PCT']}%")
-        print(f"Min Margin: {self.config['MIN_MARGIN_PCT']}%")
-        print(f"Check Interval: {self.config['SLEEP_INTERVAL']} seconds")
-        print(f"Monitors: {len(self.config['MONITORS'])}")
-        print(f"Models: {len(self.config['OUR_PRICES'])}\n")
+        logger.info("Starting price monitoring (PRODUCTION MODE)...")
+        print("=" * 60)
+        print("BK-PriceGuard - Price Monitoring (PRODUCTION)")
+        print("=" * 60)
+        print(f"Target Margin:    {self.config['TARGET_MARGIN_PCT']}%")
+        print(f"Min Margin:       {self.config['MIN_MARGIN_PCT']}%")
+        print(f"Check Interval:   {self.config['SLEEP_INTERVAL']} seconds")
+        print(f"Monitors:         {len(self.config['MONITORS'])}")
+        print(f"Models:           {len(self.config['OUR_PRICES'])}")
+        print(f"Mock Telegram:    {self.mock_telegram}")
+        print(f"Single Cycle:     {single_cycle}")
+        print("=" * 60 + "\n")
 
         try:
             while self.running:
                 try:
                     self.run_cycle()
+
+                    if single_cycle:
+                        logger.info("Single-cycle mode: exiting after one run")
+                        break
 
                     # Wait before next cycle
                     sleep_time = self.config['SLEEP_INTERVAL']
@@ -297,19 +360,28 @@ class PriceMonitor:
                         "dim"
                     )
 
-                    time.sleep(sleep_time)
-
-                    if test_mode:
-                        break
+                    # Sleep in small chunks so we can react to signals
+                    elapsed = 0
+                    while elapsed < sleep_time and self.running:
+                        time.sleep(min(1, sleep_time - elapsed))
+                        elapsed += 1
 
                 except Exception as e:
                     logger.error(f"Error in monitoring cycle: {e}")
                     self.stats['errors'] += 1
                     self._print_safe(f"\nError: {e}", "red")
 
-                    # Send error notification if configured
-                    if self.config['TELEGRAM_TOKEN'] != 'YOUR_BOT_TOKEN_HERE':
-                        self.notifier.notify_error(str(e), "MONITORING_ERROR")
+                    # Send error notification
+                    if not self.mock_telegram:
+                        try:
+                            self.notifier.notify_error(str(e), "MONITORING_ERROR")
+                        except Exception as nested:
+                            logger.error(f"Failed to send error notification: {nested}")
+                    else:
+                        self._print_safe(
+                            f"[MOCK_SEND] Would notify Telegram: ERROR — {e}",
+                            "yellow"
+                        )
 
                     time.sleep(5)  # Wait before retry
 
@@ -326,12 +398,14 @@ class PriceMonitor:
 
         # Print final statistics
         print("\n=== Final Statistics ===")
-        print(f"Total Cycles: {self.stats['cycle_count']}")
-        print(f"Total Checks: {self.stats['total_checks']}")
+        print(f"Total Cycles:        {self.stats['cycle_count']}")
+        print(f"Total Checks:        {self.stats['total_checks']}")
         print(f"Total Opportunities: {self.stats['opportunities_found']}")
-        print(f"  - Dumping Alerts: {self.stats['dumping_alerts']}")
+        print(f"  - Dumping Alerts:   {self.stats['dumping_alerts']}")
         print(f"  - Advantage Alerts: {self.stats['advantage_alerts']}")
-        print(f"Total Errors: {self.stats['errors']}")
+        print(f"Delta Alerts (>3%):  {self.stats['delta_alerts']}")
+        print(f"Cloudflare Blocks:   {self.stats['cloudflare_blocks']}")
+        print(f"Total Errors:        {self.stats['errors']}")
 
         # Cleanup
         self.running = False
@@ -340,13 +414,18 @@ class PriceMonitor:
 
 
 def main():
-    """Entry point"""
+    """Entry point
+
+    Supports CLI flag --once for single-cycle mode (for Task Scheduler).
+    """
+    single_cycle = '--once' in sys.argv
+
     try:
         monitor = PriceMonitor()
-        monitor.run()
+        monitor.run(single_cycle=single_cycle)
     except Exception as e:
         logger.error(f"Fatal error: {e}")
-        console.print(f"\n[red]Fatal error: {e}[/red]")
+        print(f"\nFatal error: {e}")
         sys.exit(1)
 
 
