@@ -7,20 +7,20 @@
   "MONITORS": [
     {
       "name": "Example Store 1",
-      "url": "https://example.com/products",
+      "url": "https://example.com/ac-model-001",
       "selectors": {
         "product_name": "h1.product-title",
         "price": "span.price",
-        "model_id": "div.model-id"
+        "stock": "div.stock"
       }
     },
     {
       "name": "Example Store 2",
-      "url": "https://shop.example.com/items",
+      "url": "https://shop.example.com/ac-003",
       "selectors": {
-        "product_name": "div.item-name",
+        "product_name": "h1.item-name",
         "price": "p.item-price",
-        "model_id": "span.item-code"
+        "stock": "span.item-code"
       }
     }
   ],
