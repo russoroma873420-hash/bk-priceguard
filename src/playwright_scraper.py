@@ -77,13 +77,15 @@ def get_price_with_browser(
 
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(headless=True, proxy=None)
             try:
                 context = browser.new_context(
                     user_agent=user_agent,
                     viewport=DEFAULT_VIEWPORT,
                     locale="ru-RU",
                     timezone_id="Europe/Moscow",
+                    ignore_https_errors=True,
+                    proxy=None,
                     extra_http_headers={
                         "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
                     },

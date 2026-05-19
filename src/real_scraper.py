@@ -210,8 +210,9 @@ def extract_price_from_text(text: str) -> Optional[float]:
     # Remove non-breaking spaces and normalize whitespace
     cleaned = text.replace('\xa0', ' ').replace(' ', ' ').strip()
 
-    # Remove currency symbols and labels
-    cleaned = re.sub(r'[₽$€£руб\.RUBUSDEUR]', '', cleaned, flags=re.IGNORECASE)
+    # Remove currency symbols only (KEEP dots/commas — they're decimal separators)
+    cleaned = re.sub(r'[₽$€£]', '', cleaned)
+    cleaned = re.sub(r'\b(руб|RUB|USD|EUR|р)\b\.?', '', cleaned, flags=re.IGNORECASE)
 
     # Find numbers with possible separators
     # Match: 12 345.67 or 12,345.67 or 12345
