@@ -188,30 +188,16 @@ a   { color: inherit; text-decoration: none; }
 }
 .side-nav a:hover { color: var(--green-lt); }
 
-/* ── Floating buttons ── */
-.float-btns {
-  position: fixed;
-  right: 0; top: 50%;
-  transform: translateY(-50%);
-  z-index: 900;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.float-btn {
-  width: 48px; height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--white);
-  font-size: 1.3rem;
-  cursor: pointer;
-  transition: width .2s, background .2s;
-}
-.float-btn:nth-child(1) { background: var(--green); }
-.float-btn:nth-child(2) { background: var(--blue-mid); }
-.float-btn:nth-child(3) { background: var(--blue); }
-.float-btn:hover { width: 56px; }
+/* ── Floating slide-out buttons ── */
+.float-btns { position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 900; display: flex; flex-direction: column; gap: 3px; }
+.float-btn { display: flex; flex-direction: row; align-items: center; width: 48px; height: 52px; overflow: hidden; cursor: pointer; transition: width .35s cubic-bezier(.4,0,.2,1); text-decoration: none; color: var(--white); border: none; padding: 0; }
+.float-btn:hover, .float-btn.open { width: 210px; }
+.float-btn__label { flex: 1; padding: 0 10px 0 16px; white-space: nowrap; font-size: .82rem; font-weight: 600; opacity: 0; transform: translateX(12px); transition: opacity .15s .2s, transform .15s .2s; }
+.float-btn:hover .float-btn__label, .float-btn.open .float-btn__label { opacity: 1; transform: translateX(0); }
+.float-btn__icon { min-width: 48px; width: 48px; height: 52px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+.float-btn--green { background: var(--green); }
+.float-btn--blue  { background: var(--blue-mid); }
+.float-btn--dark  { background: var(--blue); }
 
 
 /* ════════════════════════════════════════

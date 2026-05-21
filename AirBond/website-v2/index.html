@@ -9,8 +9,7 @@
 </head>
 <body>
 
-<!-- ══ AI CHAT BUTTON ══ -->
-<button class="ai-chat-btn" id="aiChatBtn" title="Спросить инженера Алекса">🤖</button>
+<!-- ══ AI CHAT BUBBLE ══ -->
 <div class="ai-chat-bubble" id="aiChatBubble">
   <div class="ai-bubble-header">
     <div class="ai-avatar">🤖</div>
@@ -29,9 +28,22 @@
 
 <!-- ══ FLOATING BUTTONS ══ -->
 <div class="float-btns">
-  <a class="float-btn" href="mailto:info@bondarenkoventel.ru" title="Email">✉</a>
-  <a class="float-btn" href="#calculator" title="Калькулятор">?</a>
-  <a class="float-btn" href="#contacts" title="Telegram">✈</a>
+  <a class="float-btn float-btn--green" href="mailto:info@bondarenkoventel.ru">
+    <span class="float-btn__label">Написать нам</span>
+    <span class="float-btn__icon">✉</span>
+  </a>
+  <a class="float-btn float-btn--blue" href="#calculator">
+    <span class="float-btn__label">Рассчитать систему</span>
+    <span class="float-btn__icon">📊</span>
+  </a>
+  <div class="float-btn float-btn--teal" id="aiFloatBtn">
+    <span class="float-btn__label">Спросить Алекса</span>
+    <span class="float-btn__icon">🤖</span>
+  </div>
+  <a class="float-btn float-btn--dark" href="#contacts">
+    <span class="float-btn__label">Написать в Telegram</span>
+    <span class="float-btn__icon">✈</span>
+  </a>
 </div>
 
 <!-- ══ HEADER ══ -->
