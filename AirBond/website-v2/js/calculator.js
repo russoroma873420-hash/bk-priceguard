@@ -97,11 +97,11 @@ function showResult() {
       https://api.telegram.org/bot<TOKEN>/getUpdates
       to find your CHAT_ID
    ═══════════════════════════════════════════════════ */
-const TG_BOT_TOKEN = 'YOUR_BOT_TOKEN';
-const TG_CHAT_ID   = 'YOUR_CHAT_ID';
+const TG_BOT_TOKEN = '8922535301:AAFIKqAFzTiF5vw6YDP1Xo4N7Rvak6fo2zE';
+const TG_CHAT_ID   = '652328822';
 
 async function sendToTelegram(data) {
-  if (TG_BOT_TOKEN === 'YOUR_BOT_TOKEN') return false;
+  if (!TG_BOT_TOKEN || TG_BOT_TOKEN === 'YOUR_BOT_TOKEN') return false;
   const regionMap = {
     moscow:'Москва / МО', spb:'Санкт-Петербург', center:'Центральная Россия',
     south:'Юг России', volga:'Поволжье', ural:'Урал', sib:'Сибирь / Дальний Восток', other:'Другой регион'
