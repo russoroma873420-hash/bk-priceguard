@@ -259,51 +259,99 @@
     </div>
     <div class="vh__scene fade-in">
       <div class="iso-apartment">
-        <svg viewBox="0 0 660 495" id="apartmentSvg">
-          <rect x="0" y="0" width="660" height="495" fill="#dce8f5" rx="16"/>
-          <rect x="30" y="50" width="240" height="180" fill="#b8d4f0" rx="8"/>
-          <text x="150" y="100" text-anchor="middle" fill="#003060" font-size="13" font-weight="bold">СПАЛЬНЯ</text>
-          <rect x="50" y="120" width="100" height="70" fill="#fff" rx="6" opacity="0.7"/>
-          <rect x="50" y="120" width="100" height="20" fill="#ccc" rx="6" opacity="0.7"/>
-          <rect x="220" y="60" width="40" height="30" fill="#a0c8f0" rx="2" stroke="#003060" stroke-width="1"/>
-          <line x1="240" y1="60" x2="240" y2="90" stroke="#003060" stroke-width="1"/>
-          <rect x="310" y="50" width="320" height="180" fill="#c8e8d0" rx="8"/>
-          <text x="470" y="100" text-anchor="middle" fill="#003060" font-size="13" font-weight="bold">КУХНЯ / ВАННАЯ</text>
-          <rect x="380" y="130" width="90" height="60" fill="#fff" rx="4" opacity="0.7"/>
-          <rect x="30" y="270" width="560" height="190" fill="#e8e0f0" rx="8"/>
-          <text x="310" y="320" text-anchor="middle" fill="#003060" font-size="13" font-weight="bold">ГОСТИНАЯ</text>
-          <rect x="80" y="350" width="180" height="70" fill="#fff" rx="6" opacity="0.7"/>
-          <rect x="80" y="350" width="180" height="20" fill="#ccc" rx="6" opacity="0.7"/>
-          <line x1="290" y1="50" x2="290" y2="230" stroke="#003060" stroke-width="2" opacity="0.3"/>
-          <line x1="30" y1="250" x2="590" y2="250" stroke="#003060" stroke-width="2" opacity="0.3"/>
-          <rect x="90" y="55" width="36" height="16" fill="#003060" rx="4"/>
-          <text x="108" y="66" text-anchor="middle" fill="white" font-size="7">◈ bvt</text>
-          <rect x="430" y="55" width="36" height="16" fill="#3D8B37" rx="4"/>
-          <text x="448" y="66" text-anchor="middle" fill="white" font-size="7">◈ bvt</text>
+        <svg viewBox="0 0 720 460" id="apartmentSvg" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background -->
+          <rect width="720" height="460" fill="#F4F7F1" rx="16"/>
+
+          <!-- Left side wall x=0 -->
+          <polygon points="370,100 170,200 170,165 370,65" fill="#B8CEB0"/>
+          <line x1="370" y1="65" x2="170" y2="165" stroke="#A0BA98" stroke-width="1"/>
+
+          <!-- Bedroom floor -->
+          <polygon points="370,100 495,163 395,213 270,150" fill="#DDE8D5"/>
+          <!-- Kitchen floor -->
+          <polygon points="495,163 670,250 570,300 395,213" fill="#DBF0E0"/>
+          <!-- Bedroom/kitchen divider on floor -->
+          <line x1="495" y1="163" x2="395" y2="213" stroke="#B8D4B0" stroke-width="1.5"/>
+
+          <!-- Internal wall y=4 facing living room -->
+          <polygon points="270,150 570,300 570,265 270,115" fill="#C8DAC0"/>
+          <line x1="270" y1="115" x2="570" y2="265" stroke="#B0C4A8" stroke-width="1"/>
+
+          <!-- Living room floor -->
+          <polygon points="270,150 570,300 470,350 170,200" fill="#F0EDE5"/>
+
+          <!-- Front wall y=8 -->
+          <polygon points="170,200 470,350 470,315 170,165" fill="#A8C0A8"/>
+          <line x1="170" y1="165" x2="470" y2="315" stroke="#90B090" stroke-width="1"/>
+
+          <!-- Bedroom: bed top -->
+          <polygon points="385,132 445,165 380,198 320,165" fill="#FFFFFF" stroke="#D0DCC8" stroke-width="1.2"/>
+          <!-- Bed headboard left face -->
+          <polygon points="320,165 320,153 385,120 385,132" fill="#EAF0E4" stroke="#C4CCC0" stroke-width="1"/>
+          <!-- Pillows -->
+          <polygon points="330,157 354,170 350,174 326,161" fill="#F0F0EC"/>
+          <polygon points="360,172 384,185 380,189 356,176" fill="#F0F0EC"/>
+
+          <!-- Kitchen: counter top -->
+          <polygon points="546,225 614,262 608,265 540,228" fill="#FFFFFF" stroke="#C4D8C4" stroke-width="1.2"/>
+          <!-- Sink basin -->
+          <polygon points="553,230 576,243 571,246 548,233" fill="#CCE8D4" stroke="#A4C4AC" stroke-width="1"/>
+          <!-- Stove top -->
+          <polygon points="494,183 542,208 536,211 488,186" fill="#F4F4F0" stroke="#C4C8BC" stroke-width="1.2"/>
+          <circle cx="506" cy="194" r="3" fill="#C8C4BC"/>
+          <circle cx="524" cy="203" r="3" fill="#C8C4BC"/>
+
+          <!-- Living room: sofa top -->
+          <polygon points="268,268 390,333 382,342 260,277" fill="#E8E4DC" stroke="#C8C0B8" stroke-width="1.2"/>
+          <!-- Sofa back face -->
+          <polygon points="260,277 260,264 268,256 268,268" fill="#D8D4CC" stroke="#B8B4AC" stroke-width="1"/>
+          <!-- Coffee table -->
+          <polygon points="362,242 410,267 403,272 355,247" fill="#FFFFFF" stroke="#D0C8C0" stroke-width="1.2"/>
+
+          <!-- Room labels -->
+          <text x="365" y="175" text-anchor="middle" fill="#2D5016" font-size="9" font-weight="600" letter-spacing="1" font-family="Inter,sans-serif">СПАЛЬНЯ</text>
+          <text x="540" y="255" text-anchor="middle" fill="#2D5016" font-size="9" font-weight="600" letter-spacing="1" font-family="Inter,sans-serif">КУХНЯ</text>
+          <text x="365" y="298" text-anchor="middle" fill="#2D5016" font-size="9" font-weight="600" letter-spacing="1" font-family="Inter,sans-serif">ГОСТИНАЯ</text>
+
+          <!-- AirBond device: bedroom (on left wall) -->
+          <rect x="318" y="80" width="54" height="16" fill="#4A7C35" rx="3"/>
+          <text x="345" y="91" text-anchor="middle" fill="white" font-size="7" font-weight="bold" font-family="Inter,sans-serif">&#9830; AirBond</text>
+
+          <!-- AirBond device: kitchen (on internal wall) -->
+          <rect x="458" y="218" width="54" height="16" fill="#4A7C35" rx="3"/>
+          <text x="485" y="229" text-anchor="middle" fill="white" font-size="7" font-weight="bold" font-family="Inter,sans-serif">&#9830; AirBond</text>
+
+          <!-- Bedroom air arrows (fresh air in) -->
           <g class="air-arrow" id="arrowBedroom">
-            <line x1="108" y1="71" x2="108" y2="110" stroke="#3B9EFF" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round"><animate attributeName="stroke-dashoffset" values="0;-20" dur="1s" repeatCount="indefinite"/></line>
-            <polygon points="103,108 108,118 113,108" fill="#3B9EFF"/>
-            <line x1="140" y1="71" x2="140" y2="110" stroke="#3B9EFF" stroke-width="2" stroke-dasharray="6,4" stroke-linecap="round" opacity="0.6"><animate attributeName="stroke-dashoffset" values="0;-20" dur="1.2s" repeatCount="indefinite"/></line>
-            <polygon points="135,108 140,118 145,108" fill="#3B9EFF" opacity="0.6"/>
+            <line x1="338" y1="96" x2="325" y2="125" stroke="#4A7C35" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round"><animate attributeName="stroke-dashoffset" values="0;-20" dur="1s" repeatCount="indefinite"/></line>
+            <polygon points="320,123 325,133 330,123" fill="#4A7C35"/>
+            <line x1="356" y1="96" x2="343" y2="125" stroke="#4A7C35" stroke-width="2" stroke-dasharray="6,4" stroke-linecap="round" opacity="0.6"><animate attributeName="stroke-dashoffset" values="0;-20" dur="1.2s" repeatCount="indefinite"/></line>
+            <polygon points="338,123 343,133 348,123" fill="#4A7C35" opacity="0.6"/>
           </g>
+
+          <!-- Kitchen air arrows (stale air out) -->
           <g class="air-arrow" id="arrowKitchen">
-            <line x1="448" y1="71" x2="448" y2="130" stroke="#999" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round"><animate attributeName="stroke-dashoffset" values="0;20" dur="1s" repeatCount="indefinite"/></line>
-            <polygon points="443,73 448,63 453,73" fill="#999"/>
-            <line x1="480" y1="71" x2="480" y2="130" stroke="#999" stroke-width="2" stroke-dasharray="6,4" stroke-linecap="round" opacity="0.6"><animate attributeName="stroke-dashoffset" values="0;20" dur="1.2s" repeatCount="indefinite"/></line>
-            <polygon points="475,73 480,63 485,73" fill="#999" opacity="0.6"/>
+            <line x1="468" y1="218" x2="478" y2="188" stroke="#8BAF5A" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round"><animate attributeName="stroke-dashoffset" values="0;20" dur="1s" repeatCount="indefinite"/></line>
+            <polygon points="473,190 478,180 483,190" fill="#8BAF5A"/>
+            <line x1="488" y1="218" x2="498" y2="188" stroke="#8BAF5A" stroke-width="2" stroke-dasharray="6,4" stroke-linecap="round" opacity="0.6"><animate attributeName="stroke-dashoffset" values="0;20" dur="1.2s" repeatCount="indefinite"/></line>
+            <polygon points="493,190 498,180 503,190" fill="#8BAF5A" opacity="0.6"/>
           </g>
+
+          <!-- Drill point (wall mounting) -->
           <g class="air-arrow" id="arrowMount">
-            <circle cx="260" cy="140" r="12" fill="#003060" opacity="0.8"/>
-            <text x="260" y="144" text-anchor="middle" fill="white" font-size="9">⊙</text>
-            <line x1="272" y1="140" x2="310" y2="140" stroke="#f0a500" stroke-width="2" stroke-dasharray="4,3"><animate attributeName="stroke-dashoffset" values="0;-14" dur="0.8s" repeatCount="indefinite"/></line>
-            <text x="200" y="175" text-anchor="middle" fill="#003060" font-size="10">Ø160мм · 1 день</text>
+            <circle cx="395" cy="213" r="11" fill="none" stroke="#C4A882" stroke-width="2.5"><animate attributeName="r" values="9;14;9" dur="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0.4;1" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="395" cy="213" r="4" fill="#C4A882"/>
+            <text x="395" y="238" text-anchor="middle" fill="#5A4A3A" font-size="9" font-weight="600" font-family="Inter,sans-serif">&#216;160&#1084;&#1084; &middot; 1 &#1076;&#1077;&#1085;&#1100;</text>
           </g>
-          <rect x="30" y="455" width="160" height="22" fill="#003060" rx="4"/>
-          <text x="110" y="470" text-anchor="middle" fill="white" font-size="9" font-weight="bold">01 ПРИТОК</text>
-          <rect x="210" y="455" width="200" height="22" fill="#3D8B37" rx="4"/>
-          <text x="310" y="470" text-anchor="middle" fill="white" font-size="9" font-weight="bold">02 РЕКУПЕРАЦИЯ</text>
-          <rect x="430" y="455" width="160" height="22" fill="#f0a500" rx="4"/>
-          <text x="510" y="470" text-anchor="middle" fill="white" font-size="9" font-weight="bold">03 ГИБРИД</text>
+
+          <!-- Legend -->
+          <rect x="50" y="410" width="130" height="26" fill="#1E3A1A" rx="6"/>
+          <text x="115" y="427" text-anchor="middle" fill="white" font-size="9" font-weight="bold" font-family="Inter,sans-serif">01 &#1055;&#1056;&#1048;&#1058;&#1054;&#1050;</text>
+          <rect x="200" y="410" width="185" height="26" fill="#4A7C35" rx="6"/>
+          <text x="293" y="427" text-anchor="middle" fill="white" font-size="9" font-weight="bold" font-family="Inter,sans-serif">02 &#1056;&#1045;&#1050;&#1059;&#1055;&#1045;&#1056;&#1040;&#1062;&#1048;&#1071;</text>
+          <rect x="405" y="410" width="130" height="26" fill="#C4A882" rx="6"/>
+          <text x="470" y="427" text-anchor="middle" fill="white" font-size="9" font-weight="bold" font-family="Inter,sans-serif">03 &#1052;&#1054;&#1053;&#1058;&#1040;&#1046;</text>
         </svg>
         <div class="vh__popup" id="vhPopup">
           <h4 id="vhPopupTitle">Спальня</h4>
