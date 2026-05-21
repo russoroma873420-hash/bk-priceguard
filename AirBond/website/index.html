@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bondarenkoventel — Интеллектуальная вентиляция для вашего дома</title>
+  <meta name="description" content="Премиальные системы вентиляции с рекуперацией тепла. Чистый воздух, абсолютная тишина. Европейские технологии для России. Бесплатный инженерный расчёт.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ══ FLOATING BUTTONS ══ -->
+<div class="float-btns">
+  <a class="float-btn float-btn--green" href="mailto:info@bondarenkoventel.ru">
+    <span class="float-btn__label">Написать нам</span>
+    <span class="float-btn__icon">✉</span>
+  </a>
+  <a class="float-btn float-btn--blue" href="#calculator">
+    <span class="float-btn__label">Рассчитать систему</span>
+    <span class="float-btn__icon">📊</span>
+  </a>
+  <a class="float-btn float-btn--dark" href="#contacts">
+    <span class="float-btn__label">Написать в Telegram</span>
+    <span class="float-btn__icon">✈</span>
+  </a>
+</div>
+
+<!-- ══ HEADER ══ -->
+<header class="header">
+  <div class="header__inner">
+    <a href="#" class="logo">
+      <svg class="logo__icon" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="20" fill="rgba(255,255,255,0.1)"/>
+        <path d="M8 26 Q14 14 20 20 Q26 26 32 14" stroke="#7DEBB0" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M8 22 Q14 10 20 16 Q26 22 32 10" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <path d="M8 30 Q14 18 20 24 Q26 30 32 18" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-linecap="round" fill="none"/>
+      </svg>
+      <div>
+        <div class="logo__text">bondarenkoventel</div>
+        <div class="logo__sub">Умная вентиляция</div>
+      </div>
+    </a>
+    <button class="burger" id="burger" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- Side nav -->
+<div class="nav-overlay" id="navOverlay"></div>
+<nav class="side-nav" id="sideNav">
+  <a href="#virtual-home">Виртуальный дом</a>
+  <a href="#threat">Чистый воздух</a>
+  <a href="#calculator">Калькулятор</a>
+  <a href="#smarthome">Умный дом</a>
+  <a href="#howwework">Как мы работаем</a>
+  <a href="#faq">FAQ</a>
+  <a href="#contacts">Контакты</a>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero" id="home">
+
+  <!-- Animated SVG waves -->
+  <svg class="hero__waves" viewBox="0 0 1440 800" preserveAspectRatio="xMidYMid slice">
+    <path d="M0 400 Q360 200 720 400 Q1080 600 1440 400 L1440 800 L0 800Z" fill="white" opacity="0.03"/>
+    <path d="M0 500 Q360 300 720 500 Q1080 700 1440 500 L1440 800 L0 800Z" fill="white" opacity="0.03"/>
+    <path d="M0 600 Q360 400 720 600 Q1080 800 1440 600 L1440 800 L0 800Z" fill="white" opacity="0.04"/>
+    <!-- Floating particles -->
+    <circle cx="200" cy="300" r="3" fill="#7DEBB0" opacity="0.5"><animate attributeName="cy" values="300;250;300" dur="4s" repeatCount="indefinite"/></circle>
+    <circle cx="800" cy="200" r="2" fill="#7DEBB0" opacity="0.4"><animate attributeName="cy" values="200;150;200" dur="5s" repeatCount="indefinite"/></circle>
+    <circle cx="1100" cy="350" r="4" fill="#7DEBB0" opacity="0.3"><animate attributeName="cy" values="350;300;350" dur="3.5s" repeatCount="indefinite"/></circle>
+    <circle cx="400" cy="500" r="2" fill="white" opacity="0.3"><animate attributeName="cy" values="500;450;500" dur="6s" repeatCount="indefinite"/></circle>
+  </svg>
+
+  <div class="hero__content container">
+    <span class="hero__tag">Европейские технологии климата · Россия</span>
+    <h1>Чистый воздух.<br><span>Абсолютная тишина.</span><br>Интеллектуальная вентиляция.</h1>
+    <p class="hero__sub">
+      Европейские технологии климата с экологичным скрытым монтажом.
+      Вы управляете дизайном и функциями — мы гарантируем отсутствие шума
+      и сквозняков за счёт точных инженерных расчётов.
+    </p>
+    <div class="hero__btns">
+      <a href="#calculator" class="btn btn-primary">Подобрать систему и узнать экономию</a>
+      <a href="#virtual-home" class="btn btn-outline">Виртуальный тур по дому</a>
+    </div>
+  </div>
+
+  <!-- Trust bar -->
+  <div class="trust-bar">
+    <div class="trust-bar__inner container">
+      <div class="trust-item">
+        <div class="trust-item__icon">🌡️</div>
+        <div class="trust-item__label">Работает до<br>−35 °С</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-item__icon">🔇</div>
+        <div class="trust-item__label">Шум от<br>20 дБ</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-item__icon">📱</div>
+        <div class="trust-item__label">Управление<br>со смартфона</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-item__icon">🏭</div>
+        <div class="trust-item__label">Склад HEPA<br>фильтров в РФ</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STATS ══ -->
+<section class="stats">
+  <div class="stats__inner container">
+    <div class="stat-block fade-in">
+      <div class="stat-block__num">15</div>
+      <div class="stat-block__text">лет опыта в вентиляции</div>
+    </div>
+    <div class="stat-block fade-in">
+      <div class="stat-block__num">500+</div>
+      <div class="stat-block__text">успешных установок по России</div>
+    </div>
+    <div class="stat-block fade-in">
+      <div class="stat-block__num">92%</div>
+      <div class="stat-block__text">рекуперация тепла — ваша экономия</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ VIRTUAL HOME ══ -->
+<section class="virtual-home" id="virtual-home">
+  <div class="container">
+    <div class="section-head fade-in">
+      <div class="section-tag">Интерактивный тур</div>
+      <h2>Войдите в виртуальный дом<br>bondarenkoventel</h2>
+      <p>Выберите комнату и увидите, как работает система вентиляции</p>
+    </div>
+
+    <div class="vh__controls fade-in">
+      <button class="vh-btn active" data-zone="bedroom">🛏 Спальня (приток)</button>
+      <button class="vh-btn" data-zone="kitchen">🍳 Кухня (вытяжка)</button>
+      <button class="vh-btn" data-zone="mount">🔧 Скрытый монтаж</button>
+    </div>
+
+    <div class="vh__scene fade-in">
+      <!-- Isometric apartment SVG -->
+      <div class="iso-apartment">
+        <svg viewBox="0 0 660 495" id="apartmentSvg">
+          <!-- Floor -->
+          <rect x="0" y="0" width="660" height="495" fill="#dce8f5" rx="16"/>
+
+          <!-- Room 1: Bedroom (left) -->
+          <rect x="30" y="50" width="240" height="180" fill="#b8d4f0" rx="8"/>
+          <text x="150" y="100" text-anchor="middle" fill="#003060" font-size="13" font-weight="bold">СПАЛЬНЯ</text>
+          <!-- Bed -->
+          <rect x="50" y="120" width="100" height="70" fill="#fff" rx="6" opacity="0.7"/>
+          <rect x="50" y="120" width="100" height="20" fill="#ccc" rx="6" opacity="0.7"/>
+          <!-- Window symbol -->
+          <rect x="220" y="60" width="40" height="30" fill="#a0c8f0" rx="2" stroke="#003060" stroke-width="1"/>
+          <line x1="240" y1="60" x2="240" y2="90" stroke="#003060" stroke-width="1"/>
+
+          <!-- Room 2: Kitchen (right) -->
+          <rect x="310" y="50" width="320" height="180" fill="#c8e8d0" rx="8"/>
+          <text x="470" y="100" text-anchor="middle" fill="#003060" font-size="13" font-weight="bold">КУХНЯ / ВАННАЯ</text>
+          <!-- Table -->
+          <rect x="380" y="130" width="90" height="60" fill="#fff" rx="4" opacity="0.7"/>
+
+          <!-- Room 3: Living (bottom) -->
+          <rect x="30" y="270" width="560" height="190" fill="#e8e0f0" rx="8"/>
+          <text x="310" y="320" text-anchor="middle" fill="#003060" font-size="13" font-weight="bold">ГОСТИНАЯ</text>
+          <!-- Sofa -->
+          <rect x="80" y="350" width="180" height="70" fill="#fff" rx="6" opacity="0.7"/>
+          <rect x="80" y="350" width="180" height="20" fill="#ccc" rx="6" opacity="0.7"/>
+
+          <!-- Walls -->
+          <line x1="290" y1="50" x2="290" y2="230" stroke="#003060" stroke-width="2" opacity="0.3"/>
+          <line x1="30" y1="250" x2="590" y2="250" stroke="#003060" stroke-width="2" opacity="0.3"/>
+
+          <!-- Ventilation devices -->
+          <!-- Bedroom unit -->
+          <rect x="90" y="55" width="36" height="16" fill="#003060" rx="4"/>
+          <text x="108" y="66" text-anchor="middle" fill="white" font-size="7">◈ bvt</text>
+
+          <!-- Kitchen unit -->
+          <rect x="430" y="55" width="36" height="16" fill="#3D8B37" rx="4"/>
+          <text x="448" y="66" text-anchor="middle" fill="white" font-size="7">◈ bvt</text>
+
+          <!-- BEDROOM AIR ARROWS (blue = in) -->
+          <g class="air-arrow" id="arrowBedroom">
+            <line x1="108" y1="71" x2="108" y2="110" stroke="#3B9EFF" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round">
+              <animate attributeName="stroke-dashoffset" values="0;-20" dur="1s" repeatCount="indefinite"/>
+            </line>
+            <polygon points="103,108 108,118 113,108" fill="#3B9EFF"/>
+
+            <line x1="140" y1="71" x2="140" y2="110" stroke="#3B9EFF" stroke-width="2" stroke-dasharray="6,4" stroke-linecap="round" opacity="0.6">
+              <animate attributeName="stroke-dashoffset" values="0;-20" dur="1.2s" repeatCount="indefinite"/>
+            </line>
+            <polygon points="135,108 140,118 145,108" fill="#3B9EFF" opacity="0.6"/>
+          </g>
+
+          <!-- KITCHEN AIR ARROWS (gray = out) -->
+          <g class="air-arrow" id="arrowKitchen">
+            <line x1="448" y1="71" x2="448" y2="130" stroke="#999" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round">
+              <animate attributeName="stroke-dashoffset" values="0;20" dur="1s" repeatCount="indefinite"/>
+            </line>
+            <polygon points="443,73 448,63 453,73" fill="#999"/>
+
+            <line x1="480" y1="71" x2="480" y2="130" stroke="#999" stroke-width="2" stroke-dasharray="6,4" stroke-linecap="round" opacity="0.6">
+              <animate attributeName="stroke-dashoffset" values="0;20" dur="1.2s" repeatCount="indefinite"/>
+            </line>
+            <polygon points="475,73 480,63 485,73" fill="#999" opacity="0.6"/>
+          </g>
+
+          <!-- MOUNT arrows — showing wall drilling -->
+          <g class="air-arrow" id="arrowMount">
+            <circle cx="260" cy="140" r="12" fill="#003060" opacity="0.8"/>
+            <text x="260" y="144" text-anchor="middle" fill="white" font-size="9">⊙</text>
+            <line x1="272" y1="140" x2="310" y2="140" stroke="#f0a500" stroke-width="2" stroke-dasharray="4,3">
+              <animate attributeName="stroke-dashoffset" values="0;-14" dur="0.8s" repeatCount="indefinite"/>
+            </line>
+            <text x="200" y="175" text-anchor="middle" fill="#003060" font-size="10">Ø160мм · 1 день</text>
+          </g>
+
+          <!-- System labels -->
+          <rect x="30" y="455" width="160" height="22" fill="#003060" rx="4"/>
+          <text x="110" y="470" text-anchor="middle" fill="white" font-size="9" font-weight="bold">01 ПРИТОК</text>
+
+          <rect x="210" y="455" width="200" height="22" fill="#3D8B37" rx="4"/>
+          <text x="310" y="470" text-anchor="middle" fill="white" font-size="9" font-weight="bold">02 РЕКУПЕРАЦИЯ</text>
+
+          <rect x="430" y="455" width="160" height="22" fill="#f0a500" rx="4"/>
+          <text x="510" y="470" text-anchor="middle" fill="white" font-size="9" font-weight="bold">03 ГИБРИД</text>
+        </svg>
+
+        <!-- Popup -->
+        <div class="vh__popup" id="vhPopup">
+          <h4 id="vhPopupTitle">Спальня</h4>
+          <p id="vhPopupText">Выберите зону выше</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ INVISIBLE THREAT ══ -->
+<section class="threat" id="threat">
+  <div class="container">
+    <div class="threat__grid">
+      <div class="threat__text fade-in">
+        <div class="section-tag">Невидимая угроза</div>
+        <h2>Вы уверены, что дома дышите чистым воздухом?</h2>
+        <p>
+          В современных герметичных домах с пластиковыми окнами воздух может быть
+          в <strong>2–5 раз грязнее уличного</strong>. Мы проводим в помещениях
+          до 90% нашей жизни. То, что видно на мебели — лишь малая часть проблемы.
+        </p>
+        <br>
+        <p>
+          Многоступенчатая фильтрация <strong>bondarenkoventel</strong> класса HEPA
+          надёжно блокирует даже самые опасные частицы.
+        </p>
+      </div>
+
+      <div class="particle-cards fade-in">
+        <div class="particle-card particle-card--pm10">
+          <div class="particle-card__top">
+            <span class="particle-card__size">PM10</span>
+            <span class="particle-card__danger pm10-danger">Умеренно опасно</span>
+          </div>
+          <div class="particle-card__name">Пыльца и цементная пыль (до 10 мкм)</div>
+          <div class="particle-card__desc">Вызывают первичное раздражение и аллергию</div>
+          <div class="progress-bar"><div class="progress-bar__fill pm10-fill" data-width="50"></div></div>
+        </div>
+
+        <div class="particle-card particle-card--pm25">
+          <div class="particle-card__top">
+            <span class="particle-card__size">PM2.5</span>
+            <span class="particle-card__danger pm25-danger">Опасно</span>
+          </div>
+          <div class="particle-card__name">Споры плесени и бактерии (до 2.5 мкм)</div>
+          <div class="particle-card__desc">Проникают глубоко в лёгкие</div>
+          <div class="progress-bar"><div class="progress-bar__fill pm25-fill" data-width="75"></div></div>
+        </div>
+
+        <div class="particle-card particle-card--pm1">
+          <div class="particle-card__top">
+            <span class="particle-card__size">PM1</span>
+            <span class="particle-card__danger pm1-danger">Критически опасно</span>
+          </div>
+          <div class="particle-card__name">Наночастицы и вирусы (до 1 мкм)</div>
+          <div class="particle-card__desc">Проникают сквозь лёгочные мембраны в кровь</div>
+          <div class="progress-bar"><div class="progress-bar__fill pm1-fill" data-width="95"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CALCULATOR ══ -->
+<section class="calculator" id="calculator">
+  <div class="container">
+    <div class="section-head fade-in">
+      <div class="section-tag" style="color:#7DEBB0">Интеллектуальный калькулятор</div>
+      <h2>Подберите систему за 1 минуту</h2>
+      <p>4 вопроса — точная рекомендация и расчёт экономии</p>
+    </div>
+
+    <div class="quiz fade-in" id="quiz">
+      <!-- Progress -->
+      <div class="quiz__progress">
+        <div class="quiz__dot" id="dot1"></div>
+        <div class="quiz__dot" id="dot2"></div>
+        <div class="quiz__dot" id="dot3"></div>
+        <div class="quiz__dot" id="dot4"></div>
+      </div>
+
+      <!-- Step 1: Type -->
+      <div class="quiz__step active" id="step1">
+        <h3>Тип вашего жилья?</h3>
+        <div class="choice-grid">
+          <button class="choice-btn" data-val="apartment">
+            <span class="choice-icon">🏢</span>Квартира
+          </button>
+          <button class="choice-btn" data-val="house">
+            <span class="choice-icon">🏠</span>Дом
+          </button>
+          <button class="choice-btn" data-val="commercial">
+            <span class="choice-icon">🏗️</span>Коммерция
+          </button>
+        </div>
+        <div class="quiz__nav">
+          <span></span>
+          <button class="quiz__next" onclick="nextStep(1)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Area -->
+      <div class="quiz__step" id="step2">
+        <h3>Общая площадь помещения?</h3>
+        <div class="slider-val" id="areaVal">60 м²</div>
+        <div class="slider-wrap">
+          <label><span>20 м²</span><span>300 м²</span></label>
+          <input type="range" id="areaSlider" min="20" max="300" value="60"
+            oninput="document.getElementById('areaVal').textContent = this.value + ' м²'">
+        </div>
+        <div class="quiz__nav">
+          <button class="quiz__back" onclick="prevStep(2)">← Назад</button>
+          <button class="quiz__next" onclick="nextStep(2)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Renovation stage -->
+      <div class="quiz__step" id="step3">
+        <h3>Стадия ремонта?</h3>
+        <div class="choice-grid">
+          <button class="choice-btn" data-val="project">
+            <span class="choice-icon">📐</span>Проект / нулевой цикл
+          </button>
+          <button class="choice-btn" data-val="rough">
+            <span class="choice-icon">🧱</span>Черновая отделка
+          </button>
+          <button class="choice-btn" data-val="finished">
+            <span class="choice-icon">🛋️</span>Готовый ремонт
+          </button>
+        </div>
+        <div class="quiz__nav">
+          <button class="quiz__back" onclick="prevStep(3)">← Назад</button>
+          <button class="quiz__next" onclick="nextStep(3)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Region -->
+      <div class="quiz__step" id="step4">
+        <h3>Ваш регион?</h3>
+        <select id="regionSelect">
+          <option value="">— Выберите регион —</option>
+          <option value="msk">Москва и МО</option>
+          <option value="spb">Санкт-Петербург и ЛО</option>
+          <option value="south">Юг России (Краснодар, Ростов)</option>
+          <option value="ural">Урал (Екатеринбург, Челябинск)</option>
+          <option value="sib">Сибирь (Новосибирск, Красноярск)</option>
+          <option value="other">Другой регион</option>
+        </select>
+        <div class="quiz__nav">
+          <button class="quiz__back" onclick="prevStep(4)">← Назад</button>
+          <button class="quiz__next" onclick="showResult()">Получить результат 🎯</button>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div class="quiz__result" id="quizResult">
+        <h3>Ваша идеальная система:</h3>
+        <div class="result-card" id="resultSystem">
+          <h4>Рекомендация</h4>
+          <p id="resultSystemText"></p>
+        </div>
+        <div class="result-card">
+          <h4>Экономия на отоплении</h4>
+          <div class="result-saving" id="resultSaving"></div>
+          <p>Системы с рекуперацией возвращают до 92% тепла обратно в помещение.
+             Рассчитано с учётом вашей площади и региональных тарифов.</p>
+        </div>
+        <div class="capture-form">
+          <input type="text" id="capturePhone" placeholder="Ваш телефон или email">
+          <button class="btn btn-primary" onclick="submitCapture()">
+            Получить точный расчёт бесплатно
+          </button>
+        </div>
+        <p style="font-size:.8rem; opacity:.6; margin-top:12px; text-align:center">
+          Инженер свяжется с вами в течение 2 часов в рабочее время
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SMART HOME ══ -->
+<section class="smarthome" id="smarthome">
+  <div class="container">
+    <div class="smarthome__inner">
+      <!-- Phone mockup -->
+      <div class="phone-mockup fade-in">
+        <div class="phone">
+          <div class="phone__screen">
+            <div class="phone__app-bar">
+              <span class="phone__app-title">bondarenkoventel</span>
+              <div class="phone__app-icon"></div>
+            </div>
+
+            <div class="air-gauge">
+              <div class="air-gauge__val">Отлично</div>
+              <div class="air-gauge__label">Качество воздуха</div>
+            </div>
+
+            <div class="sensor-row">
+              <div class="sensor-chip">
+                <span class="sensor-chip__val">421</span>
+                CO₂ ppm
+              </div>
+              <div class="sensor-chip">
+                <span class="sensor-chip__val">48%</span>
+                Влажность
+              </div>
+              <div class="sensor-chip">
+                <span class="sensor-chip__val">21°</span>
+                Темп.
+              </div>
+            </div>
+
+            <div class="fan-speed">
+              <span class="fan-speed__label">Скорость вентиляции</span>
+              <div class="fan-speed__dots">
+                <div class="fan-speed__dot on"></div>
+                <div class="fan-speed__dot on"></div>
+                <div class="fan-speed__dot"></div>
+                <div class="fan-speed__dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features -->
+      <div class="smarthome__features fade-in">
+        <div class="section-tag">Smart Home</div>
+        <h2>Управляйте климатом со смартфона</h2>
+
+        <div class="feature-item">
+          <div class="feature-item__icon">📊</div>
+          <div>
+            <h4>Аналитика онлайн</h4>
+            <p>Встроенные датчики CO₂, влажности и чистоты воздуха (VOC) в реальном времени</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-item__icon">📅</div>
+          <div>
+            <h4>Ваши сценарии</h4>
+            <p>Расписание на неделю — система снизит мощность пока вы на работе и освежит дом к возвращению</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-item__icon">🎙️</div>
+          <div>
+            <h4>Голосовое управление</h4>
+            <p>Интеграция с Алиса, Google Home и Amazon Alexa — управление голосом без лишних действий</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-item__icon">🔔</div>
+          <div>
+            <h4>Автоматический сервис</h4>
+            <p>Напоминание о замене фильтров и заказ в один клик с доставкой на дом</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ HOW WE WORK ══ -->
+<section class="howwework" id="howwework">
+  <div class="container">
+    <div class="section-head fade-in">
+      <div class="section-tag">Наш процесс</div>
+      <h2>Вы создаёте комфорт. Мы гарантируем тишину.</h2>
+      <p>Правильный монтаж — это 50% результата. Именно поэтому мы берём инжиниринг на себя.</p>
+    </div>
+
+    <div class="timeline fade-in">
+      <div class="timeline-step">
+        <div class="timeline-step__num">01</div>
+        <h4>Ваш выбор</h4>
+        <p>Используйте калькулятор и подберите дизайн внутренних блоков под ваш интерьер</p>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-step__num">02</div>
+        <h4>Наш инжиниринг</h4>
+        <p>Строгие расчёты тепловых нагрузок и аэродинамики. Гарантия отсутствия шума и сквозняков</p>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-step__num">03</div>
+        <h4>Чистый монтаж</h4>
+        <p>Аккуратное бурение без пыли. Пусконаладка с балансировкой воздуха по комнатам</p>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-step__num">04</div>
+        <h4>Цифровые ключи</h4>
+        <p>Настройка приложения на вашем смартфоне и обучение управлению климатом</p>
+      </div>
+    </div>
+
+    <div class="howwework__cta fade-in">
+      <a href="#calculator" class="btn btn-primary" style="font-size:1.05rem; padding:16px 36px">
+        Загрузить план квартиры для бесплатного проекта
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FAQ ══ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-head fade-in">
+      <div class="section-tag">Вопросы и ответы</div>
+      <h2>Часто задаваемые вопросы</h2>
+    </div>
+
+    <div class="faq__list fade-in">
+
+      <div class="faq-item">
+        <button class="faq-item__q">Не замёрзнет ли система зимой?</button>
+        <div class="faq-item__a">
+          Нет. Наши рекуператоры сертифицированы для работы при −35 °С без обмерзания.
+          В них применяется технология противоточного теплообмена и автоматическая смена
+          направления потока каждые 70 секунд, что исключает накопление льда.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-item__q">Можно ли устанавливать, если уже поклеены обои?</button>
+        <div class="faq-item__a">
+          Да. Для готового ремонта мы используем алмазное бурение — компактная коронка Ø160 мм,
+          без пыли и грязи. Работа занимает 1 день. Отверстие аккуратно оформляется декоративной
+          накладкой, которая вписывается в любой интерьер.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-item__q">Как часто нужно менять фильтры?</button>
+        <div class="faq-item__a">
+          В среднем каждые 6–12 месяцев, в зависимости от загрязнённости воздуха в вашем районе.
+          Приложение автоматически отслеживает ресурс фильтра и пришлёт уведомление заранее.
+          Замена занимает 2 минуты — без инструментов.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-item__q">Как получить инженерный расчёт бесплатно?</button>
+        <div class="faq-item__a">
+          Заполните калькулятор выше или позвоните нам. Наш инженер свяжется с вами в течение
+          2 рабочих часов, запросит план квартиры и подготовит полный проект вентиляции
+          с расчётом воздухообмена, подбором оборудования и сметой.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-item__q">Сколько времени занимает монтаж?</button>
+        <div class="faq-item__a">
+          Монтаж децентрализованной системы для типовой двухкомнатной квартиры занимает
+          1 рабочий день. Централизованная система с воздуховодами — 2–3 дня.
+          По итогам инженер проводит полную пусконаладку и передаёт цифровые «ключи» от системы.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="footer" id="contacts">
+  <div class="container">
+    <div class="footer__grid">
+
+      <div class="footer__brand">
+        <a href="#" class="logo">
+          <svg class="logo__icon" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="20" fill="rgba(255,255,255,0.1)"/>
+            <path d="M8 26 Q14 14 20 20 Q26 26 32 14" stroke="#7DEBB0" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M8 22 Q14 10 20 16 Q26 22 32 10" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          </svg>
+          <div>
+            <div class="logo__text">bondarenkoventel</div>
+            <div class="logo__sub">Умная вентиляция</div>
+          </div>
+        </a>
+        <p>Премиальные системы вентиляции с рекуперацией тепла. Европейские технологии, адаптированные для России.</p>
+      </div>
+
+      <div class="footer__col">
+        <h5>Компания</h5>
+        <a href="#">О компании</a>
+        <a href="#">Наши проекты</a>
+        <a href="#">Сертификаты</a>
+        <a href="#">Политика конфиденциальности</a>
+        <a href="#">Юридическое уведомление</a>
+      </div>
+
+      <div class="footer__col">
+        <h5>Контакт</h5>
+        <a href="tel:+78001234567">+7 800 123-45-67 (бесплатно)</a>
+        <a href="mailto:info@bondarenkoventel.ru">info@bondarenkoventel.ru</a>
+        <p style="font-size:.85rem; margin: 8px 0; color: rgba(255,255,255,.5)">
+          Пн–Пт: с 9:00 до 18:00 МСК
+        </p>
+        <h5 style="margin-top:20px">Подписывайтесь</h5>
+        <div class="footer__socials">
+          <a class="social-link" href="#" title="YouTube">▶</a>
+          <a class="social-link" href="#" title="Telegram">✈</a>
+          <a class="social-link" href="#" title="ВКонтакте">В</a>
+          <a class="social-link" href="#" title="Instagram">◻</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer__bottom">
+      <span>© 2024 bondarenkoventel. Все права защищены.</span>
+      <span>Интеллектуальная вентиляция для здоровья вашей семьи</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/calculator.js"></script>
+</body>
+</html>
