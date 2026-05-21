@@ -90,17 +90,148 @@ function showResult() {
   for (let i = 1; i <= 4; i++) document.getElementById('dot' + i).classList.add('done');
 }
 
-/* ── Capture form ── */
-function submitCapture() {
-  const val = document.getElementById('capturePhone').value.trim();
-  if (!val) {
-    document.getElementById('capturePhone').style.borderColor = '#e05000';
-    return;
-  }
-  /* In production: POST to backend / CRM */
-  const btn = document.querySelector('.capture-form .btn');
-  btn.textContent = '✓ Спасибо! Инженер свяжется с вами';
-  btn.style.background = '#2e6e2a';
-  btn.disabled = true;
-  document.getElementById('capturePhone').disabled = true;
+/* ═══════════════════════════════════════════════════
+   TELEGRAM CONFIG — replace before launch
+   1) Create a bot via @BotFather → get BOT_TOKEN
+   2) Send any message to your bot, then open:
+      https://api.telegram.org/bot<TOKEN>/getUpdates
+      to find your CHAT_ID
+   ═══════════════════════════════════════════════════ */
+const TG_BOT_TOKEN = 'YOUR_BOT_TOKEN';
+const TG_CHAT_ID   = 'YOUR_CHAT_ID';
+
+async function sendToTelegram(data) {
+  if (TG_BOT_TOKEN === 'YOUR_BOT_TOKEN') return false;
+  const regionMap = {
+    moscow:'Москва / МО', spb:'Санкт-Петербург', center:'Центральная Россия',
+    south:'Юг России', volga:'Поволжье', ural:'Урал', sib:'Сибирь / Дальний Восток', other:'Другой регион'
+  };
+  const typeMap = { flat:'Квартира', house:'Дом', office:'Офис / коммерция' };
+  const stageMap = { project:'Проект / черновая', rough:'Черновая отделка', finished:'Чистовая / жилая' };
+
+  const lines = [
+    '🏠 <b>Новая заявка — AirBond</b>',
+    '',
+    `👤 Имя: ${data.name || '—'}`,
+    `📱 Телефон: ${data.phone || '—'}`,
+  ];
+  if (data.type)   lines.push(`🏠 Тип объекта: ${typeMap[data.type] || data.type}`);
+  if (data.area)   lines.push(`📐 Площадь: ${data.area} м²`);
+  if (data.stage)  lines.push(`🔨 Стадия: ${stageMap[data.stage] || data.stage}`);
+  if (data.region) lines.push(`📍 Регион: ${regionMap[data.region] || data.region}`);
+  if (data.system) lines.push(`\n⚙️ Рекомендация: ${data.system.slice(0, 120)}...`);
+  if (data.saving) lines.push(`💰 Расчётная экономия: ${data.saving}`);
+  lines.push(`\n⏰ ${new Date().toLocaleString('ru-RU')}`);
+
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TG_CHAT_ID, text: lines.join('\n'), parse_mode: 'HTML' })
+    });
+    return r.ok;
+  } catch { return false; }
 }
+
+/* ── Lead modal ── */
+function openLeadModal(source) {
+  const modal = document.getElementById('leadModal');
+  const ctx   = document.getElementById('leadContext');
+
+  if (source === 'calc' && state.type && state.area) {
+    const sys  = document.getElementById('resultSystemText')?.textContent || '';
+    const sav  = document.getElementById('resultSaving')?.textContent || '';
+    if (sys || sav) {
+      ctx.style.display = 'block';
+      ctx.innerHTML = (sys ? `<b>Система:</b> ${sys.slice(0,90)}…<br>` : '') +
+                      (sav ? `<b>Экономия:</b> ${sav}` : '');
+    }
+  } else {
+    ctx.style.display = 'none';
+  }
+
+  document.getElementById('leadSuccess').style.display = 'none';
+  document.getElementById('leadSubmitBtn').style.display = '';
+  document.getElementById('leadName').value  = '';
+  document.getElementById('leadPhone').value = '';
+  document.getElementById('leadConsent').checked = false;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLeadModal() {
+  const modal = document.getElementById('leadModal');
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+async function submitLead() {
+  const name    = document.getElementById('leadName').value.trim();
+  const phone   = document.getElementById('leadPhone').value.trim();
+  const consent = document.getElementById('leadConsent').checked;
+  const nameEl  = document.getElementById('leadName');
+  const phoneEl = document.getElementById('leadPhone');
+
+  nameEl.classList.remove('error');
+  phoneEl.classList.remove('error');
+
+  let valid = true;
+  if (!name)    { nameEl.classList.add('error');  nameEl.focus(); valid = false; }
+  if (!phone || phone.replace(/\D/g,'').length < 11) {
+    phoneEl.classList.add('error');
+    if (valid) phoneEl.focus();
+    valid = false;
+  }
+  if (!consent) {
+    document.getElementById('leadConsent').closest('.lead-modal__consent').style.outline = '2px solid #c0392b';
+    valid = false;
+  }
+  if (!valid) return;
+
+  const btn = document.getElementById('leadSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Отправляем…';
+
+  await sendToTelegram({
+    name, phone,
+    type:   state.type,
+    area:   state.area,
+    stage:  state.stage,
+    region: state.region,
+    system: document.getElementById('resultSystemText')?.textContent || '',
+    saving: document.getElementById('resultSaving')?.textContent || '',
+  });
+
+  /* Yandex.Metrika goal */
+  if (typeof ym !== 'undefined') ym(window.YM_ID, 'reachGoal', 'lead_submit');
+
+  btn.style.display = 'none';
+  document.getElementById('leadSuccess').style.display = 'block';
+
+  setTimeout(closeLeadModal, 3500);
+}
+
+/* ── Phone mask ── */
+document.addEventListener('DOMContentLoaded', () => {
+  const phoneEl = document.getElementById('leadPhone');
+  if (!phoneEl) return;
+  phoneEl.addEventListener('input', () => {
+    let v = phoneEl.value.replace(/\D/g, '');
+    if (v.startsWith('8')) v = '7' + v.slice(1);
+    if (v.length > 11) v = v.slice(0, 11);
+    let out = '';
+    if (v.length > 0)  out = '+7';
+    if (v.length > 1)  out += ' (' + v.slice(1, 4);
+    if (v.length >= 4) out += ') ' + v.slice(4, 7);
+    if (v.length >= 7) out += '-' + v.slice(7, 9);
+    if (v.length >= 9) out += '-' + v.slice(9, 11);
+    phoneEl.value = out;
+  });
+
+  /* Close modal on Escape */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLeadModal();
+  });
+});

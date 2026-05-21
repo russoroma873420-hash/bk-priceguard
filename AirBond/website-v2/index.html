@@ -9,6 +9,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <!-- Яндекс.Метрика — замените YOUR_METRIKA_ID на номер счётчика с metrika.yandex.ru -->
+  <script>
+    window.YM_ID = 'YOUR_METRIKA_ID';
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();
+    for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+    ym(window.YM_ID,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+  </script>
 </head>
 <body>
 
@@ -525,10 +535,11 @@
         <h3>Ваша идеальная система:</h3>
         <div class="result-card" id="resultSystem"><h4>Рекомендация</h4><p id="resultSystemText"></p></div>
         <div class="result-card"><h4>Экономия на отоплении</h4><div class="result-saving" id="resultSaving"></div><p>Системы с рекуперацией возвращают до 92% тепла. Рассчитано с учётом площади и региональных тарифов.</p></div>
-        <div class="capture-form">
-          <input type="text" id="capturePhone" placeholder="Ваш телефон или email">
-          <button class="btn btn-primary" onclick="submitCapture()">Получить точный расчёт бесплатно</button>
+        <div class="price-hint">
+          Стоимость под ваш объект: <strong>от 85 000 ₽</strong><br>
+          <small>оборудование + монтаж · точная цена после выезда инженера</small>
         </div>
+        <button class="btn btn-primary capture-cta-btn" onclick="openLeadModal('calc')">Получить точный расчёт бесплатно</button>
         <p style="font-size:.8rem;opacity:.6;margin-top:12px;text-align:center">Инженер свяжется с вами в течение 2 часов в рабочее время</p>
       </div>
     </div>
@@ -712,7 +723,7 @@
       <div class="timeline-step"><div class="timeline-step__num">04</div><h4>Цифровые ключи</h4><p>Настройка приложения и обучение управлению климатом</p></div>
     </div>
     <div class="howwework__cta fade-in">
-      <a href="#calculator" class="btn btn-primary" style="font-size:1.05rem;padding:16px 36px">Загрузить план квартиры для бесплатного проекта</a>
+      <button onclick="openLeadModal('howwework')" class="btn btn-primary" style="font-size:1.05rem;padding:16px 36px">Получить бесплатный расчёт для вашего объекта</button>
     </div>
   </div>
 </section>
@@ -768,7 +779,7 @@
         <a href="#">О компании</a>
         <a href="#">Наши проекты</a>
         <a href="#">Сертификаты</a>
-        <a href="#">Политика конфиденциальности</a>
+        <a href="privacy.html">Политика конфиденциальности</a>
       </div>
       <div class="footer__col">
         <h5>Контакт</h5>
@@ -785,11 +796,33 @@
       </div>
     </div>
     <div class="footer__bottom">
-      <span>© 2024 AirBond. Все права защищены.</span>
-      <span>Версия 2.0 — расширенная</span>
+      <span>© 2025 AirBond. Самозанятый Бондаренко ИНН&nbsp;<span id="footerINN">YOUR_INN</span>. Все права защищены.</span>
+      <span>г.&nbsp;<span id="footerCity">YOUR_CITY</span></span>
     </div>
   </div>
 </footer>
+
+<!-- ══ LEAD MODAL ══ -->
+<div class="lead-modal" id="leadModal" aria-hidden="true" role="dialog" aria-labelledby="leadModalTitle">
+  <div class="lead-modal__backdrop" onclick="closeLeadModal()"></div>
+  <div class="lead-modal__box">
+    <button class="lead-modal__close" onclick="closeLeadModal()" aria-label="Закрыть">✕</button>
+    <div class="lead-modal__icon">🏠</div>
+    <h3 class="lead-modal__title" id="leadModalTitle">Получить расчёт бесплатно</h3>
+    <p class="lead-modal__sub">Инженер свяжется с вами в течение 2 часов в рабочее время</p>
+    <div id="leadContext" class="lead-modal__context" style="display:none"></div>
+    <input type="text" id="leadName" class="lead-modal__input" placeholder="Ваше имя" autocomplete="name">
+    <input type="tel" id="leadPhone" class="lead-modal__input" placeholder="+7 (___) ___-__-__" autocomplete="tel">
+    <label class="lead-modal__consent">
+      <input type="checkbox" id="leadConsent">
+      <span>Согласен с <a href="privacy.html" target="_blank">Политикой конфиденциальности</a> и обработкой персональных данных</span>
+    </label>
+    <button class="btn btn-primary lead-modal__submit" id="leadSubmitBtn" onclick="submitLead()">Отправить заявку</button>
+    <div class="lead-modal__success" id="leadSuccess" style="display:none">
+      ✓ Заявка отправлена!<br>Инженер свяжется с вами в течение 2 часов.
+    </div>
+  </div>
+</div>
 
 <script src="js/main.js"></script>
 <script src="js/calculator.js"></script>
