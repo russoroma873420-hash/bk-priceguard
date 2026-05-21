@@ -152,14 +152,6 @@ const aiBubble   = document.getElementById('aiChatBubble');
 const aiFloatBtn = document.getElementById('aiFloatBtn');
 if (aiFloatBtn) aiFloatBtn.addEventListener('click', () => aiBubble.classList.toggle('open'));
 
-/* Toggle .open on tap for mobile (hover doesn't work on touch) */
-document.querySelectorAll('.float-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    const wasOpen = this.classList.contains('open');
-    document.querySelectorAll('.float-btn').forEach(b => b.classList.remove('open'));
-    if (!wasOpen) this.classList.add('open');
-  });
-});
 
 function scrollToSection(id) {
   aiBubble.classList.remove('open');
