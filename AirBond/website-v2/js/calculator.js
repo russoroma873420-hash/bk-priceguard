@@ -1,4 +1,4 @@
-/* bondarenkoventel — calculator.js */
+/* AirBond — calculator.js */
 
 const state = { type: null, area: 60, stage: null, region: null };
 
@@ -40,17 +40,6 @@ function shake(el) {
   el.style.animation = 'shake .3s ease';
   setTimeout(() => { el.style.animation = ''; }, 350);
 }
-
-/* Add shake keyframes */
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes shake {
-    0%,100%{ transform: translateX(0); }
-    25%    { transform: translateX(-8px); }
-    75%    { transform: translateX(8px); }
-  }
-`;
-document.head.appendChild(style);
 
 /* ── Choice buttons ── */
 document.querySelectorAll('.choice-btn').forEach(btn => {
