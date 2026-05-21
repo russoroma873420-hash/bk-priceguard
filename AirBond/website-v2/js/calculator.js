@@ -97,7 +97,7 @@ function showResult() {
       https://api.telegram.org/bot<TOKEN>/getUpdates
       to find your CHAT_ID
    ═══════════════════════════════════════════════════ */
-const TG_BOT_TOKEN = '8922535301:AAFIKqAFzTiF5vw6YDP1Xo4N7Rvak6fo2zE';
+const TG_BOT_TOKEN = '8931211239:AAHx779bSDIBcde6Dlzn1lBcVvn-wKGJ7GQ';
 const TG_CHAT_ID   = '652328822';
 
 async function sendToTelegram(data) {
