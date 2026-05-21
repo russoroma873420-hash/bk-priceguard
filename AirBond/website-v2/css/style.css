@@ -66,9 +66,10 @@ a   { color: inherit; text-decoration: none; }
 .float-btns { position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 900; display: flex; flex-direction: column; gap: 3px; }
 .float-btn { display: flex; flex-direction: row; align-items: center; width: 48px; height: 52px; overflow: hidden; cursor: pointer; transition: width .35s cubic-bezier(.4,0,.2,1); text-decoration: none; color: var(--white); border: none; padding: 0; background: none; }
 .float-btn:hover, .float-btn.open { width: 210px; }
-.float-btn__label { flex: 1; padding: 0 10px 0 16px; white-space: nowrap; font-size: .82rem; font-weight: 600; opacity: 0; transform: translateX(12px); transition: opacity .15s .2s, transform .15s .2s; }
+.float-btn__label { flex: 1; min-width: 0; padding: 0 10px 0 16px; white-space: nowrap; font-size: .82rem; font-weight: 600; opacity: 0; transform: translateX(12px); transition: opacity .15s .2s, transform .15s .2s; }
 .float-btn:hover .float-btn__label, .float-btn.open .float-btn__label { opacity: 1; transform: translateX(0); }
 .float-btn__icon { min-width: 48px; width: 48px; height: 52px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+@media (max-width: 768px) { .float-btn, .float-btn:hover, .float-btn.open { width: 48px !important; transition: none; } .float-btn__label { display: none; } }
 .float-btn--green { background: var(--sage); }
 .float-btn--blue  { background: var(--forest); }
 .float-btn--teal  { background: #3d7a45; }
