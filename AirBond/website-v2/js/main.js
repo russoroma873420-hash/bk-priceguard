@@ -21,8 +21,9 @@ const io = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (!e.isIntersecting) return;
     e.target.classList.add('visible');
-    e.target.querySelectorAll('.progress-bar__fill, .noise-bar__fill').forEach(bar => {
-      bar.style.width = (bar.dataset.width || '0') + '%';
+    const bars = e.target.querySelectorAll('.progress-bar__fill, .noise-bar__fill');
+    if (bars.length) requestAnimationFrame(() => {
+      bars.forEach(bar => { bar.style.width = (bar.dataset.width || '0') + '%'; });
     });
   });
 }, { threshold: 0.15 });
