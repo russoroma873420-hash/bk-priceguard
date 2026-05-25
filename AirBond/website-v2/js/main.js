@@ -1,5 +1,11 @@
 /* bondarenkoventel v2 — main.js */
 
+/* ── Hide float-btns on any touch device (JS fallback for CSS media query failures) ── */
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+  const fb = document.querySelector('.float-btns');
+  if (fb) fb.remove();
+}
+
 /* ── Burger / side nav ── */
 const burger     = document.getElementById('burger');
 const sideNav    = document.getElementById('sideNav');
@@ -21,8 +27,9 @@ const io = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (!e.isIntersecting) return;
     e.target.classList.add('visible');
-    e.target.querySelectorAll('.progress-bar__fill, .noise-bar__fill').forEach(bar => {
-      bar.style.width = (bar.dataset.width || '0') + '%';
+    const bars = e.target.querySelectorAll('.progress-bar__fill, .noise-bar__fill');
+    if (bars.length) requestAnimationFrame(() => {
+      bars.forEach(bar => { bar.style.width = (bar.dataset.width || '0') + '%'; });
     });
   });
 }, { threshold: 0.15 });
@@ -33,6 +40,15 @@ document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
 let co2Interval = null;
 let co2Value = 1200;
 let ventOn = false;
+let co2InView = false;
+let _co2State = null;
+
+/* Pause DOM updates when CO2 section is off-screen */
+const _co2Section = document.getElementById('co2Monitor');
+if (_co2Section) {
+  new IntersectionObserver(entries => { co2InView = entries[0].isIntersecting; }, { threshold: 0 })
+    .observe(_co2Section);
+}
 
 function toggleCo2() {
   const btn     = document.getElementById('co2Toggle');
@@ -49,40 +65,45 @@ function toggleCo2() {
   if (ventOn) {
     co2Interval = setInterval(() => {
       co2Value = Math.max(380, co2Value - Math.floor(Math.random() * 30 + 15));
-      updateCo2Display(co2Value, valEl, heroVal, statusEl, monitor);
+      if (co2InView) updateCo2Display(co2Value, valEl, heroVal, statusEl, monitor);
       if (co2Value <= 380) clearInterval(co2Interval);
     }, 300);
   } else {
     co2Interval = setInterval(() => {
       co2Value = Math.min(1400, co2Value + Math.floor(Math.random() * 20 + 8));
-      updateCo2Display(co2Value, valEl, heroVal, statusEl, monitor);
+      if (co2InView) updateCo2Display(co2Value, valEl, heroVal, statusEl, monitor);
       if (co2Value >= 1400) clearInterval(co2Interval);
     }, 400);
   }
 }
 
 function updateCo2Display(val, valEl, heroVal, statusEl, monitor) {
-  valEl.textContent  = val;
+  /* Always update number */
+  valEl.textContent = val;
   if (heroVal) heroVal.textContent = val;
 
-  if (val < 700) {
-    valEl.className   = 'co2-value good';
-    statusEl.className= 'co2-status good';
+  /* Only update classes/text when state actually changes */
+  const state = val < 700 ? 'good' : val < 1000 ? 'warn' : 'danger';
+  if (state === _co2State) return;
+  _co2State = state;
+
+  if (state === 'good') {
+    valEl.className    = 'co2-value good';
+    statusEl.className = 'co2-status good';
     statusEl.textContent = '✓ Отлично';
+    monitor.classList.remove('warn');
     monitor.classList.add('good');
-    monitor.style.boxShadow = '0 0 40px rgba(61,139,55,.4)';
-  } else if (val < 1000) {
-    valEl.className   = 'co2-value';
-    statusEl.className= 'co2-status';
+  } else if (state === 'warn') {
+    valEl.className    = 'co2-value';
+    statusEl.className = 'co2-status';
     statusEl.textContent = '~ Допустимо';
     monitor.classList.remove('good');
-    monitor.style.boxShadow = '0 0 40px rgba(240,165,0,.35)';
+    monitor.classList.add('warn');
   } else {
-    valEl.className   = 'co2-value danger';
-    statusEl.className= 'co2-status danger';
+    valEl.className    = 'co2-value danger';
+    statusEl.className = 'co2-status danger';
     statusEl.textContent = '⚠ Опасно';
-    monitor.classList.remove('good');
-    monitor.style.boxShadow = '0 0 40px rgba(192,57,43,.4)';
+    monitor.classList.remove('good', 'warn');
   }
 }
 
@@ -100,7 +121,7 @@ setTimeout(() => {
         pulse += dir * 5;
         if (pulse >= 1260 || pulse <= 1150) dir *= -1;
         co2Value = pulse;
-        updateCo2Display(pulse, valEl, heroVal, statusEl, monitor);
+        if (co2InView) updateCo2Display(pulse, valEl, heroVal, statusEl, monitor);
       }
     }, 200);
   }
@@ -152,14 +173,6 @@ const aiBubble   = document.getElementById('aiChatBubble');
 const aiFloatBtn = document.getElementById('aiFloatBtn');
 if (aiFloatBtn) aiFloatBtn.addEventListener('click', () => aiBubble.classList.toggle('open'));
 
-/* Toggle .open on tap for mobile (hover doesn't work on touch) */
-document.querySelectorAll('.float-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    const wasOpen = this.classList.contains('open');
-    document.querySelectorAll('.float-btn').forEach(b => b.classList.remove('open'));
-    if (!wasOpen) this.classList.add('open');
-  });
-});
 
 function scrollToSection(id) {
   aiBubble.classList.remove('open');
@@ -175,13 +188,54 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-/* ── Header shadow ── */
+/* ── Header shadow (class toggle only — no boxShadow mutation on scroll) ── */
 const header = document.querySelector('.header');
+let scrollRaf = false;
 window.addEventListener('scroll', () => {
-  header.style.boxShadow = window.scrollY > 10 ? '0 4px 24px rgba(0,0,0,.35)' : '0 2px 16px rgba(0,0,0,.25)';
-});
+  if (scrollRaf) return;
+  scrollRaf = true;
+  requestAnimationFrame(() => {
+    header.classList.toggle('scrolled', window.scrollY > 10);
+    scrollRaf = false;
+  });
+}, { passive: true });
 
 /* ── Shake keyframes ── */
 const style = document.createElement('style');
 style.textContent = `@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}`;
 document.head.appendChild(style);
+
+/* ── Stats countUp animation ── */
+const countUpObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    countUpObserver.unobserve(e.target);
+    const el = e.target;
+    const raw = el.textContent.replace(/\D/g, '');
+    const target = parseInt(raw, 10);
+    const suffix = el.textContent.replace(/[\d]/g, '');
+    if (!target) return;
+    let cur = 0;
+    const step = Math.ceil(target / 60);
+    const timer = setInterval(() => {
+      cur = Math.min(cur + step, target);
+      el.textContent = cur + suffix;
+      if (cur >= target) clearInterval(timer);
+    }, 25);
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.stat-block__num').forEach(el => countUpObserver.observe(el));
+
+/* ── Appointment timer ── */
+(function() {
+  const el = document.getElementById('nextVisitDate');
+  if (!el) return;
+  const now = new Date();
+  const days = ['вс','пн','вт','ср','чт','пт','сб'];
+  const months = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+  let d = new Date(now);
+  d.setDate(d.getDate() + 2);
+  while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + 1);
+  el.textContent = days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()];
+})();
