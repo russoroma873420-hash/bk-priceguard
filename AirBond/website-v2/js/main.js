@@ -177,3 +177,38 @@ window.addEventListener('scroll', () => {
 const style = document.createElement('style');
 style.textContent = `@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}`;
 document.head.appendChild(style);
+
+/* ── Stats countUp animation ── */
+const countUpObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    countUpObserver.unobserve(e.target);
+    const el = e.target;
+    const raw = el.textContent.replace(/\D/g, '');
+    const target = parseInt(raw, 10);
+    const suffix = el.textContent.replace(/[\d]/g, '');
+    if (!target) return;
+    let cur = 0;
+    const step = Math.ceil(target / 60);
+    const timer = setInterval(() => {
+      cur = Math.min(cur + step, target);
+      el.textContent = cur + suffix;
+      if (cur >= target) clearInterval(timer);
+    }, 25);
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.stat-block__num').forEach(el => countUpObserver.observe(el));
+
+/* ── Appointment timer ── */
+(function() {
+  const el = document.getElementById('nextVisitDate');
+  if (!el) return;
+  const now = new Date();
+  const days = ['вс','пн','вт','ср','чт','пт','сб'];
+  const months = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+  let d = new Date(now);
+  d.setDate(d.getDate() + 2);
+  while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + 1);
+  el.textContent = days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()];
+})();

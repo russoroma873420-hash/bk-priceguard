@@ -11,6 +11,30 @@
   <meta property="og:description" content="Свежий воздух без открытых окон. Монтаж за 1 день, работает при −35°C, тихо 20 дБ.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://airbond.ru/">
+  <meta property="og:image" content="https://airbond.ru/ComfyUI_00225_.webp">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="720">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "AirBond — Умная вентиляция",
+    "url": "https://airbond.ru",
+    "telephone": "+79029987030",
+    "email": "info@airbond.ru",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Барнаул",
+      "addressRegion": "Алтайский край",
+      "addressCountry": "RU"
+    },
+    "taxID": "223504139171",
+    "description": "Монтаж приточной вентиляции с рекуперацией. HEPA+UV-C. Работает при −35°C.",
+    "priceRange": "от 85 000 ₽",
+    "image": "https://airbond.ru/ComfyUI_00225_.webp",
+    "sameAs": ["https://t.me/airbond_barnaul_bot"]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -94,6 +118,9 @@
       </div>
     </a>
     <a class="header__phone" href="tel:+79029987030">+7 902-998-7030</a>
+    <a class="header__wa" href="https://wa.me/79029987030" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </a>
     <button class="burger" id="burger" aria-label="Меню">
       <span></span><span></span><span></span>
     </button>
@@ -109,6 +136,7 @@
   <a href="#uvc">UV-C защита</a>
   <a href="#filters">Фильтры ISO</a>
   <a href="#testimonials">Отзывы</a>
+  <a href="#portfolio">Портфолио</a>
   <a href="#calculator">Калькулятор</a>
   <a href="#frost">Морозостойкость</a>
   <a href="#compare">Сравнение</a>
@@ -133,6 +161,10 @@
     <div class="hero__btns">
       <a href="#calculator" class="btn btn-primary">Подобрать систему и узнать экономию</a>
       <a href="#co2" class="btn btn-outline">Проверить воздух у вас дома</a>
+    </div>
+    <div class="hero__next-visit">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="opacity:.7"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+      Ближайший выезд инженера: <strong id="nextVisitDate">загрузка…</strong>
     </div>
   </div>
   <div class="hero__wave-bottom">
@@ -289,7 +321,7 @@
     </div>
     <div class="vh__scene fade-in">
       <div class="iso-apartment">
-        <img src="ComfyUI_00225_.webp" alt="Виртуальный дом AirBond" class="apt-img">
+        <img src="ComfyUI_00225_.webp" alt="Виртуальный дом AirBond" class="apt-img" loading="lazy">
         <svg viewBox="0 0 1024 1024" class="apt-overlay" id="apartmentSvg" xmlns="http://www.w3.org/2000/svg">
 
           <!-- AirBond device: bedroom (left exterior wall) -->
@@ -495,6 +527,71 @@
   </div>
 </section>
 
+<!-- ══ PORTFOLIO ══ -->
+<section class="portfolio" id="portfolio">
+  <div class="container">
+    <div class="section-head fade-in">
+      <div class="section-tag">Наши работы</div>
+      <h2>Выполненные объекты в Барнауле</h2>
+      <p>Реальные установки — фото, параметры, результаты</p>
+    </div>
+    <div class="portfolio-grid fade-in">
+
+      <div class="portfolio-card">
+        <div class="portfolio-card__img">
+          <img src="ComfyUI_00225_.webp" alt="Квартира Центральный район" loading="lazy">
+          <div class="portfolio-card__badge">Центральный р-н</div>
+        </div>
+        <div class="portfolio-card__body">
+          <h4>3к квартира · 87 м²</h4>
+          <p>Децентрализованные рекуператоры в 3 комнатах. Готовый ремонт, бурение за 1 день.</p>
+          <div class="portfolio-card__stats">
+            <div class="portfolio-stat"><span>92%</span>рекуперация</div>
+            <div class="portfolio-stat"><span>1 день</span>монтаж</div>
+            <div class="portfolio-stat"><span>20 дБ</span>тишина</div>
+          </div>
+          <button class="btn btn-primary portfolio-card__cta" onclick="openLeadModal('portfolio')">Хочу такое же</button>
+        </div>
+      </div>
+
+      <div class="portfolio-card">
+        <div class="portfolio-card__img">
+          <img src="ComfyUI_00226_.webp" alt="Коттедж Индустриальный район" loading="lazy">
+          <div class="portfolio-card__badge">Индустриальный р-н</div>
+        </div>
+        <div class="portfolio-card__body">
+          <h4>Коттедж · 165 м²</h4>
+          <p>Централизованная ПВУ со скрытыми воздуховодами в перекрытии. Smart Home интеграция.</p>
+          <div class="portfolio-card__stats">
+            <div class="portfolio-stat"><span>−38%</span>экономия тепла</div>
+            <div class="portfolio-stat"><span>4 зоны</span>управление</div>
+            <div class="portfolio-stat"><span>Smart</span>управление</div>
+          </div>
+          <button class="btn btn-primary portfolio-card__cta" onclick="openLeadModal('portfolio')">Хочу такое же</button>
+        </div>
+      </div>
+
+      <div class="portfolio-card">
+        <div class="portfolio-card__img">
+          <img src="ComfyUI_00225_.webp" alt="Офис Ленинский район" loading="lazy">
+          <div class="portfolio-card__badge">Ленинский р-н</div>
+        </div>
+        <div class="portfolio-card__body">
+          <h4>Офис · 120 м²</h4>
+          <p>Приточно-вытяжная система. CO₂ ниже 700 ppm в течение всего рабочего дня.</p>
+          <div class="portfolio-card__stats">
+            <div class="portfolio-stat"><span>&lt;700</span>CO₂ ppm</div>
+            <div class="portfolio-stat"><span>12 чел</span>одновременно</div>
+            <div class="portfolio-stat"><span>+40%</span>продуктивность</div>
+          </div>
+          <button class="btn btn-primary portfolio-card__cta" onclick="openLeadModal('portfolio')">Хочу такое же</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- ══ CALCULATOR ══ -->
 <section class="calculator" id="calculator">
   <div class="container">
@@ -555,9 +652,20 @@
         <h3>Ваша идеальная система:</h3>
         <div class="result-card" id="resultSystem"><h4>Рекомендация</h4><p id="resultSystemText"></p></div>
         <div class="result-card"><h4>Экономия на отоплении</h4><div class="result-saving" id="resultSaving"></div><p>Системы с рекуперацией возвращают до 92% тепла. Рассчитано с учётом площади и региональных тарифов.</p></div>
+        <div class="roi-chart-wrap">
+          <h4 style="font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mint);margin-bottom:12px">Когда система окупится</h4>
+          <canvas id="roiChart" height="160"></canvas>
+        </div>
         <div class="price-hint">
           Стоимость под ваш объект: <strong>от 85 000 ₽</strong><br>
           <small>оборудование + монтаж · точная цена после выезда инженера</small>
+        </div>
+        <div class="installment-hint">
+          <div class="installment-hint__left">
+            <strong>Рассрочка без переплат — от 7 000 ₽/мес</strong>
+            <p>Доступно через Сбер, Тинькофф и ВТБ. Одобрение за 5 минут.</p>
+          </div>
+          <button class="btn btn-outline installment-hint__btn" onclick="openLeadModal('installment')">Узнать условия</button>
         </div>
         <button class="btn btn-primary capture-cta-btn" onclick="openLeadModal('calc')">Получить точный расчёт бесплатно</button>
         <p style="font-size:.8rem;opacity:.6;margin-top:12px;text-align:center">Инженер свяжется с вами в течение 2 часов в рабочее время</p>
@@ -780,6 +888,17 @@
   </div>
 </section>
 
+<!-- ══ FINAL CTA ══ -->
+<section class="final-cta">
+  <div class="container">
+    <div class="final-cta__inner fade-in">
+      <h2>Готовы к чистому воздуху в вашем доме?</h2>
+      <p>Бесплатный выезд инженера · Расчёт за 30 минут · Монтаж за 1 день</p>
+      <button class="btn btn-primary final-cta__btn" onclick="openLeadModal('final-cta')">Получить бесплатный расчёт</button>
+    </div>
+  </div>
+</section>
+
 <!-- ══ FOOTER ══ -->
 <footer class="footer" id="contacts">
   <div class="container">
@@ -798,7 +917,7 @@
         <h5>Компания</h5>
         <a href="#">О компании</a>
         <a href="#">Наши проекты</a>
-        <a href="#">Сертификаты</a>
+        <a href="mailto:info@airbond.ru?subject=Запрос%20сертификата%20AirBond">Сертификаты</a>
         <a href="privacy.html">Политика конфиденциальности</a>
       </div>
       <div class="footer__col">
@@ -844,6 +963,7 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="js/main.js"></script>
 <script src="js/calculator.js"></script>
 </body>

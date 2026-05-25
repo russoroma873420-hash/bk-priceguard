@@ -88,6 +88,47 @@ function showResult() {
 
   /* Update dots — all done */
   for (let i = 1; i <= 4; i++) document.getElementById('dot' + i).classList.add('done');
+
+  /* ROI Chart */
+  const canvas = document.getElementById('roiChart');
+  if (canvas && typeof Chart !== 'undefined') {
+    if (canvas._chartInst) canvas._chartInst.destroy();
+    const years = [1, 2, 3, 4, 5, 6, 7];
+    const savings = years.map(y => Math.round(annualSaving * y / 1000));
+    const cost = Math.round(85 / 1); // baseline 85k
+    canvas._chartInst = new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: years.map(y => y + ' лет'),
+        datasets: [{
+          label: 'Накопленная экономия (тыс. ₽)',
+          data: savings,
+          borderColor: '#8BAF5A',
+          backgroundColor: 'rgba(139,175,90,.15)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#8BAF5A',
+        }, {
+          label: 'Стоимость системы (тыс. ₽)',
+          data: years.map(() => cost),
+          borderColor: 'rgba(255,255,255,.3)',
+          borderWidth: 1,
+          borderDash: [6, 4],
+          fill: false,
+          pointRadius: 0,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: 'rgba(255,255,255,.7)', font: { size: 11 } } } },
+        scales: {
+          x: { ticks: { color: 'rgba(255,255,255,.6)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.08)' } },
+          y: { ticks: { color: 'rgba(255,255,255,.6)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.08)' } }
+        }
+      }
+    });
+  }
 }
 
 /* ═══════════════════════════════════════════════════
