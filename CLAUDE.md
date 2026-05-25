@@ -62,9 +62,11 @@
 
 ## Статус домена (на 25.05.2026)
 - ✅ Домен куплен на reg.ru, DNS верный (4 A-записи GitHub Pages + CNAME www)
-- ❌ Сайт на airbond.ru пока НЕ открывается — `403 host_not_allowed`
-- ⏳ **Не хватает одного шага:** GitHub → bk-priceguard → Settings → Pages → Custom domain → `airbond.ru` → Save. После этого ждать SSL 5–10 мин.
-- ✅ github.io-URL работает уже сейчас
+- ✅ Custom domain `airbond.ru` привязан в GitHub Pages, «DNS check successful»
+- ✅ Сайт открывается на `https://airbond.ru` (проверено в браузере)
+- ⏳ Осталось: дождаться выпуска SSL и поставить галочку **Enforce HTTPS** в Settings → Pages (станет активной через 15–60 мин)
+
+> ⚠️ Прим.: из песочницы Claude Code внешние домены недоступны — `curl` к airbond.ru/github.io даёт `403 host_not_allowed` (сетевой фильтр окружения, НЕ статус сайта). Разрешён только github.com. Проверять домен — с телефона/браузера или по статусу GitHub Pages, не через curl.
 
 ## Фаза 2 (после зелёного замка)
 1. Реставрация фото (приоритет — задача от Екатерины, первый денежный поток)
