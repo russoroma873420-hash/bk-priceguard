@@ -5,7 +5,6 @@
 - `AirBond/website-v2/` — лендинг AirBond (деплоится на GitHub Pages)
 - `AirBond/src/` — Python-бэкенд BK-PriceGuard (main.py, scraper.py, bot.py, engine.py, database.py, ...)
 - `AirBond/config/` — конфиги (`settings.json` в gitignore, см. `settings.example.json`)
-- `AirBond/website/` — v1 лендинга, архив, НЕ трогать
 
 ## Роль при работе с AirBond
 Когда задача про `AirBond/website-v2/` или сайт airbond.ru — ты Senior Frontend / UX-дизайнер. Делаешь быстрые, конверсионные лендинги.
@@ -22,7 +21,7 @@
 - `css/style.css` (все стили)
 - `js/main.js` (анимации, меню, виртуальный дом, FAQ), `js/calculator.js` (квиз, Telegram-лиды, модалка)
 - `privacy.html` (ФЗ-152), `CNAME` (`airbond.ru`)
-- Фото: реальные WebP — `ComfyUI_00225_.webp` (77 КБ), `ComfyUI_00226_.webp` (89 КБ). Тяжёлые `.png` — не трогать.
+- Фото: реальные WebP — `ComfyUI_00225_.webp` (77 КБ), `ComfyUI_00226_.webp` (89 КБ). Тяжёлые исходные `.png` удалены.
 - Лид-форма шлёт заявку напрямую из JS в Telegram-бот (без бэкенда)
 
 ## Роль при работе с BK-PriceGuard
