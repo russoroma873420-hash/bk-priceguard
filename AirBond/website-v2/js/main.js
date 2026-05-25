@@ -1,5 +1,11 @@
 /* bondarenkoventel v2 — main.js */
 
+/* ── Hide float-btns on any touch device (JS fallback for CSS media query failures) ── */
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+  const fb = document.querySelector('.float-btns');
+  if (fb) fb.remove();
+}
+
 /* ── Burger / side nav ── */
 const burger     = document.getElementById('burger');
 const sideNav    = document.getElementById('sideNav');
