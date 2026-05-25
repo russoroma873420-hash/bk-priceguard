@@ -33,6 +33,15 @@ document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
 let co2Interval = null;
 let co2Value = 1200;
 let ventOn = false;
+let co2InView = false;
+let _co2State = null;
+
+/* Pause DOM updates when CO2 section is off-screen */
+const _co2Section = document.getElementById('co2Monitor');
+if (_co2Section) {
+  new IntersectionObserver(entries => { co2InView = entries[0].isIntersecting; }, { threshold: 0 })
+    .observe(_co2Section);
+}
 
 function toggleCo2() {
   const btn     = document.getElementById('co2Toggle');
@@ -49,40 +58,45 @@ function toggleCo2() {
   if (ventOn) {
     co2Interval = setInterval(() => {
       co2Value = Math.max(380, co2Value - Math.floor(Math.random() * 30 + 15));
-      updateCo2Display(co2Value, valEl, heroVal, statusEl, monitor);
+      if (co2InView) updateCo2Display(co2Value, valEl, heroVal, statusEl, monitor);
       if (co2Value <= 380) clearInterval(co2Interval);
     }, 300);
   } else {
     co2Interval = setInterval(() => {
       co2Value = Math.min(1400, co2Value + Math.floor(Math.random() * 20 + 8));
-      updateCo2Display(co2Value, valEl, heroVal, statusEl, monitor);
+      if (co2InView) updateCo2Display(co2Value, valEl, heroVal, statusEl, monitor);
       if (co2Value >= 1400) clearInterval(co2Interval);
     }, 400);
   }
 }
 
 function updateCo2Display(val, valEl, heroVal, statusEl, monitor) {
-  valEl.textContent  = val;
+  /* Always update number */
+  valEl.textContent = val;
   if (heroVal) heroVal.textContent = val;
 
-  if (val < 700) {
-    valEl.className   = 'co2-value good';
-    statusEl.className= 'co2-status good';
+  /* Only update classes/text when state actually changes */
+  const state = val < 700 ? 'good' : val < 1000 ? 'warn' : 'danger';
+  if (state === _co2State) return;
+  _co2State = state;
+
+  if (state === 'good') {
+    valEl.className    = 'co2-value good';
+    statusEl.className = 'co2-status good';
     statusEl.textContent = '✓ Отлично';
+    monitor.classList.remove('warn');
     monitor.classList.add('good');
-    monitor.style.boxShadow = '0 0 40px rgba(61,139,55,.4)';
-  } else if (val < 1000) {
-    valEl.className   = 'co2-value';
-    statusEl.className= 'co2-status';
+  } else if (state === 'warn') {
+    valEl.className    = 'co2-value';
+    statusEl.className = 'co2-status';
     statusEl.textContent = '~ Допустимо';
     monitor.classList.remove('good');
-    monitor.style.boxShadow = '0 0 40px rgba(240,165,0,.35)';
+    monitor.classList.add('warn');
   } else {
-    valEl.className   = 'co2-value danger';
-    statusEl.className= 'co2-status danger';
+    valEl.className    = 'co2-value danger';
+    statusEl.className = 'co2-status danger';
     statusEl.textContent = '⚠ Опасно';
-    monitor.classList.remove('good');
-    monitor.style.boxShadow = '0 0 40px rgba(192,57,43,.4)';
+    monitor.classList.remove('good', 'warn');
   }
 }
 
@@ -100,7 +114,7 @@ setTimeout(() => {
         pulse += dir * 5;
         if (pulse >= 1260 || pulse <= 1150) dir *= -1;
         co2Value = pulse;
-        updateCo2Display(pulse, valEl, heroVal, statusEl, monitor);
+        if (co2InView) updateCo2Display(pulse, valEl, heroVal, statusEl, monitor);
       }
     }, 200);
   }
