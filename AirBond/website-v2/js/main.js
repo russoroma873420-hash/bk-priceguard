@@ -167,14 +167,14 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-/* ── Header shadow ── */
+/* ── Header shadow (class toggle only — no boxShadow mutation on scroll) ── */
 const header = document.querySelector('.header');
 let scrollRaf = false;
 window.addEventListener('scroll', () => {
   if (scrollRaf) return;
   scrollRaf = true;
   requestAnimationFrame(() => {
-    header.style.boxShadow = window.scrollY > 10 ? '0 4px 24px rgba(0,0,0,.35)' : '0 2px 16px rgba(0,0,0,.25)';
+    header.classList.toggle('scrolled', window.scrollY > 10);
     scrollRaf = false;
   });
 }, { passive: true });
