@@ -76,7 +76,7 @@
 <!-- ══ HEADER ══ -->
 <header class="header">
   <div class="header__inner">
-    <a href="#" class="logo">
+    <a href="#" class="logo" id="logoHome">
       <svg class="logo__icon" viewBox="0 0 40 40" fill="none">
         <circle cx="20" cy="20" r="20" fill="rgba(74,124,53,0.1)"/>
         <path d="M8 26 Q14 14 20 20 Q26 26 32 14" stroke="#4A7C35" stroke-width="2.5" stroke-linecap="round" fill="none"/>
@@ -103,6 +103,25 @@
     </button>
   </div>
 </header>
+
+<!-- ══ SECTION NAV BAR ══ -->
+<nav class="section-nav" id="sectionNav">
+  <div class="section-nav__inner">
+    <a href="#co2"         class="snav-btn">CO₂ монитор</a>
+    <a href="#noise"       class="snav-btn">Тишина</a>
+    <a href="#virtual-home" class="snav-btn">Виртуальный дом</a>
+    <a href="#threat"      class="snav-btn">Чистый воздух</a>
+    <a href="#uvc"         class="snav-btn">UV-C защита</a>
+    <a href="#filters"     class="snav-btn">Фильтры ISO</a>
+    <a href="#testimonials" class="snav-btn">Отзывы</a>
+    <a href="#portfolio"   class="snav-btn">Портфолио</a>
+    <a href="#calculator"  class="snav-btn">Калькулятор</a>
+    <a href="#frost"       class="snav-btn">Морозо­стой­кость</a>
+    <a href="#compare"     class="snav-btn">Сравнение</a>
+    <a href="#smarthome"   class="snav-btn">Умный дом</a>
+    <a href="#faq"         class="snav-btn">FAQ</a>
+  </div>
+</nav>
 
 <div class="nav-overlay" id="navOverlay"></div>
 <nav class="side-nav" id="sideNav">
@@ -159,9 +178,7 @@
         Ближайший выезд инженера: <strong id="nextVisitDate">загрузка…</strong>
       </div>
     </div>
-    <div class="hero__photo">
-      <img src="russia-map.webp" alt="AirBond — вентиляция для всей России, работает при −35°C" width="540" height="420" loading="eager" fetchpriority="high">
-    </div>
+
 
   </div>
   <div class="hero__wave-bottom">
@@ -672,6 +689,52 @@
 </section>
 
 
+<!-- ══ FROST SECTION ══ -->
+<section class="frost-section" id="frost">
+  <div class="container">
+    <div class="section-head fade-in">
+      <div class="section-tag">Создано для России</div>
+      <h2>Бесперебойная работа при −35°C</h2>
+      <p class="section-sub">Спроектировано для сурового континентального климата — свежий воздух без сквозняков и обледенения</p>
+    </div>
+    <div class="frost__body fade-in">
+      <div class="frost__map">
+        <img src="frost-map.webp" alt="AirBond работает по всей России при −35°C" loading="lazy">
+      </div>
+      <div class="frost__features">
+        <div class="frost__card">
+          <div class="frost__icon">🔥</div>
+          <div>
+            <strong>Умный преднагрев</strong>
+            <p>Встроенные нагреватели подогревают входящий поток до поступления в блок — лёд не образуется</p>
+          </div>
+        </div>
+        <div class="frost__card">
+          <div class="frost__icon">♻️</div>
+          <div>
+            <strong>Рекуперация до 80% тепла</strong>
+            <p>Тёплый отработанный воздух греет уличный приток. Потоки не смешиваются — запахов нет</p>
+          </div>
+        </div>
+        <div class="frost__card">
+          <div class="frost__icon">🤖</div>
+          <div>
+            <strong>Автооттаивание 24/7</strong>
+            <p>Датчики следят за теплообменником и при необходимости автоматически прогревают ядро</p>
+          </div>
+        </div>
+        <div class="frost__card">
+          <div class="frost__icon">🌡️</div>
+          <div>
+            <strong>Гарантия при −35°C</strong>
+            <p>Работоспособность подтверждена испытаниями в Сибири и на Урале — без остановок системы</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ══ COMPETITOR TABLE (НОВОЕ) ══ -->
 <section class="compare-section" id="compare">
   <div class="container">
@@ -905,5 +968,71 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="js/main.js"></script>
 <script src="js/calculator.js"></script>
+
+<script>
+/* ── Section Nav: active highlight + scroll spy ── */
+(function () {
+  const btns = document.querySelectorAll('.snav-btn');
+  const sections = [];
+  let observerPaused = false;
+
+  // Собираем все секции по href кнопок
+  btns.forEach(btn => {
+    const id = btn.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) sections.push({ el, btn });
+  });
+
+  // При клике — мгновенно выделяем и плавно скроллим
+  btns.forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      const id = this.getAttribute('href').slice(1);
+      const target = document.getElementById(id);
+      if (!target) return;
+
+      btns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+
+      const navH = (document.querySelector('.section-nav')?.offsetHeight || 48)
+                 + (document.querySelector('header')?.offsetHeight || 64);
+      const top = target.getBoundingClientRect().top + window.scrollY - navH - 8;
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+  });
+
+  // Клик на логотип — вернуться наверх и снять подсветку, блокируем observer на 1.2с
+  const logoLink = document.getElementById('logoHome');
+  if (logoLink) {
+    logoLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      observerPaused = true;
+      btns.forEach(b => b.classList.remove('active'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => { observerPaused = false; }, 1200);
+    });
+  }
+
+  // IntersectionObserver — подсвечиваем при скролле
+  const observer = new IntersectionObserver((entries) => {
+    if (observerPaused) return;
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const activeItem = sections.find(s => s.el === entry.target);
+        if (activeItem) {
+          btns.forEach(b => b.classList.remove('active'));
+          activeItem.btn.classList.add('active');
+          activeItem.btn.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+      }
+    });
+  }, {
+    rootMargin: '-120px 0px -60% 0px',
+    threshold: 0
+  });
+
+  sections.forEach(({ el }) => observer.observe(el));
+})();
+</script>
 </body>
 </html>
