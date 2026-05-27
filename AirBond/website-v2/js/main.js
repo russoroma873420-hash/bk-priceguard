@@ -241,8 +241,8 @@ document.querySelectorAll('.stat-block__num').forEach(el => countUpObserver.obse
 })();
 
 /* ════ LEAD MODAL ════ */
-const TG_BOT_TOKEN = '7771395898:AAFLgF9jElxB-Hkl4hWu7gfn5XpLbAyAVLY';
-const TG_CHAT_ID   = '936950566';
+const TG_BOT_TOKEN = '8931211239:AAHx779bSDIBcde6Dlzn1lBcVvn-wKGJ7GQ';
+const TG_CHAT_ID   = '652328822';
 
 function openLeadModal(source) {
   const modal   = document.getElementById('leadModal');
