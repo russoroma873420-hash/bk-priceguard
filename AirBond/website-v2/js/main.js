@@ -239,3 +239,128 @@ document.querySelectorAll('.stat-block__num').forEach(el => countUpObserver.obse
   while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + 1);
   el.textContent = days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()];
 })();
+
+/* ════ LEAD MODAL ════ */
+const TG_BOT_TOKEN = '7771395898:AAFLgF9jElxB-Hkl4hWu7gfn5XpLbAyAVLY';
+const TG_CHAT_ID   = '936950566';
+
+function openLeadModal(source) {
+  const modal   = document.getElementById('leadModal');
+  const ctx     = document.getElementById('leadContext');
+  const success = document.getElementById('leadSuccess');
+  const btn     = document.getElementById('leadSubmitBtn');
+
+  /* Сбрасываем предыдущее состояние */
+  success.style.display = 'none';
+  btn.style.display     = 'block';
+  btn.disabled          = false;
+  btn.textContent       = 'Отправить заявку';
+  document.getElementById('leadName').value  = '';
+  document.getElementById('leadPhone').value = '';
+  document.getElementById('leadConsent').checked = false;
+  document.getElementById('leadName').classList.remove('error');
+  document.getElementById('leadPhone').classList.remove('error');
+
+  /* Контекст — откуда открыли */
+  const labels = {
+    'calc':        '📊 Запрос после калькулятора',
+    'portfolio':   '🏠 Хочу такой же объект',
+    'howwework':   '🔧 Запрос из раздела «Как мы работаем»',
+    'installment': '💳 Рассрочка',
+    'final-cta':   '🎯 Финальная форма',
+  };
+  if (source && labels[source]) {
+    ctx.textContent    = labels[source];
+    ctx.style.display  = 'block';
+  } else {
+    ctx.style.display  = 'none';
+  }
+  modal.dataset.source = source || 'general';
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  setTimeout(() => document.getElementById('leadName').focus(), 100);
+}
+
+function closeLeadModal() {
+  const modal = document.getElementById('leadModal');
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+/* Закрытие по Escape */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLeadModal();
+});
+
+async function submitLead() {
+  const nameEl    = document.getElementById('leadName');
+  const phoneEl   = document.getElementById('leadPhone');
+  const consent   = document.getElementById('leadConsent');
+  const btn       = document.getElementById('leadSubmitBtn');
+  const success   = document.getElementById('leadSuccess');
+
+  const name  = nameEl.value.trim();
+  const phone = phoneEl.value.trim();
+
+  /* Валидация */
+  let valid = true;
+  nameEl.classList.remove('error');
+  phoneEl.classList.remove('error');
+
+  if (name.length < 2) { nameEl.classList.add('error'); valid = false; }
+  if (phone.length < 7) { phoneEl.classList.add('error'); valid = false; }
+  if (!consent.checked) {
+    consent.closest('label').style.color = 'var(--red)';
+    valid = false;
+    setTimeout(() => consent.closest('label').style.color = '', 2000);
+  }
+  if (!valid) return;
+
+  btn.disabled    = true;
+  btn.textContent = 'Отправляем…';
+
+  const source = document.getElementById('leadModal').dataset.source || 'general';
+  const page   = window.location.href;
+  const text =
+    `🏠 *Новая заявка AirBond*\n` +
+    `👤 Имя: ${name}\n` +
+    `📞 Телефон: ${phone}\n` +
+    `📌 Источник: ${source}\n` +
+    `🌐 Страница: ${page}\n` +
+    `🕐 Время: ${new Date().toLocaleString('ru-RU', {timeZone:'Asia/Barnaul'})}`;
+
+  try {
+    const res = await fetch(
+      `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id:    TG_CHAT_ID,
+          text:       text,
+          parse_mode: 'Markdown'
+        })
+      }
+    );
+    const data = await res.json();
+
+    if (data.ok) {
+      /* Успех — Метрика */
+      if (window.ym) ym(109337901, 'reachGoal', 'lead_submit');
+      btn.style.display     = 'none';
+      success.style.display = 'block';
+      setTimeout(() => closeLeadModal(), 3500);
+    } else {
+      throw new Error(data.description || 'Telegram error');
+    }
+  } catch (err) {
+    btn.disabled    = false;
+    btn.textContent = 'Отправить заявку';
+    /* Fallback — открываем WhatsApp с данными */
+    const waText = encodeURIComponent(`Здравствуйте! Меня зовут ${name}, телефон ${phone}. Хочу узнать про вентиляцию.`);
+    if (confirm('Ошибка отправки. Открыть WhatsApp для связи?')) {
+      window.open(`https://wa.me/79029987030?text=${waText}`, '_blank');
+      closeLeadModal();
+    }
+  }
+}

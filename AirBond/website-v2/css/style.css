@@ -87,11 +87,19 @@ a   { color: inherit; text-decoration: none; }
 .section-nav__inner {
   display: flex;
   gap: 5px;
-  padding: 6px 20px;
+  padding: 6px 12px;
   max-width: 1140px;
   margin: 0 auto;
   justify-content: center;
   flex-wrap: nowrap;
+  /* Мобиле: горизонтальная прокрутка */
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.section-nav__inner::-webkit-scrollbar { display: none; }
+@media (max-width: 768px) {
+  .section-nav__inner { justify-content: flex-start; }
 }
 .snav-btn {
   display: inline-flex;
@@ -593,13 +601,17 @@ a   { color: inherit; text-decoration: none; }
 /* Metrika / analytics helper */
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 
-/* ════ WHATSAPP HEADER BUTTON ════ */
+/* ════ HEADER MESSENGER BUTTONS ════ */
 .header__wa { display: flex; align-items: center; color: #25D366; margin-left: 0; margin-right: 10px; transition: color .2s; }
 .header__wa:hover { color: #128C7E; }
 .header__tg { display: flex; align-items: center; color: #2AABEE; margin-right: 10px; transition: color .2s; }
 .header__tg:hover { color: #1a8cc0; }
 .header__max { display: flex; align-items: center; color: #6B4FBB; margin-right: 10px; transition: color .2s; }
 .header__max:hover { color: #5a3fa0; }
+/* На мобиле иконки WA/TG/MAX в шапке скрываем — они есть в hero как крупные кнопки */
+@media (max-width: 768px) {
+  .header__wa, .header__tg, .header__max { display: none; }
+}
 
 /* ════ HERO NEXT VISIT ════ */
 .hero__next-visit { display: flex; align-items: center; gap: 6px; margin-top: 20px; font-size: .82rem; color: var(--text-muted); }
