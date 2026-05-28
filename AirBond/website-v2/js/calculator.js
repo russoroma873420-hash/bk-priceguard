@@ -95,7 +95,7 @@ function showResult() {
     if (canvas._chartInst) canvas._chartInst.destroy();
     const years = [1, 2, 3, 4, 5, 6, 7];
     const savings = years.map(y => Math.round(annualSaving * y / 1000));
-    const cost = Math.round(85 / 1); // baseline 85k
+    const cost = 85; // baseline 85k
     canvas._chartInst = new Chart(canvas, {
       type: 'line',
       data: {
@@ -131,13 +131,6 @@ function showResult() {
   }
 }
 
-/* ═══════════════════════════════════════════════════
-   TELEGRAM CONFIG — replace before launch
-   1) Create a bot via @BotFather → get BOT_TOKEN
-   2) Send any message to your bot, then open:
-      https://api.telegram.org/bot<TOKEN>/getUpdates
-      to find your CHAT_ID
-   ═══════════════════════════════════════════════════ */
 const TG_BOT_TOKEN = '8931211239:AAHx779bSDIBcde6Dlzn1lBcVvn-wKGJ7GQ';
 const TG_CHAT_ID   = '652328822';
 
