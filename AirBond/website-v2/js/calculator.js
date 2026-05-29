@@ -1,5 +1,9 @@
 /* AirBond — calculator.js */
 
+const TG_BOT_TOKEN = '8931211239:AAHx779bSDIBcde6Dlzn1lBcVvn-wKGJ7GQ';
+const TG_CHAT_ID   = '652328822';
+
+/* ── Quiz state ── */
 const state = { type: null, area: 60, stage: null, region: null, source: null };
 
 /* ── Step navigation ── */
@@ -7,36 +11,23 @@ function showStep(n) {
   document.querySelectorAll('.quiz__step').forEach(s => s.classList.remove('active'));
   const step = document.getElementById('step' + n);
   if (step) step.classList.add('active');
-
-  /* update progress dots */
   for (let i = 1; i <= 4; i++) {
     document.getElementById('dot' + i).classList.toggle('done', i < n);
   }
 }
 
 function nextStep(current) {
-  /* validate current step */
-  if (current === 1 && !state.type) {
-    shake(document.getElementById('step1'));
-    return;
-  }
-  if (current === 3 && !state.stage) {
-    shake(document.getElementById('step3'));
-    return;
-  }
-  if (current === 2) {
-    state.area = parseInt(document.getElementById('areaSlider').value, 10);
-  }
+  if (current === 1 && !state.type)  { shake(document.getElementById('step1')); return; }
+  if (current === 3 && !state.stage) { shake(document.getElementById('step3')); return; }
+  if (current === 2) state.area = parseInt(document.getElementById('areaSlider').value, 10);
   showStep(current + 1);
 }
 
-function prevStep(current) {
-  showStep(current - 1);
-}
+function prevStep(current) { showStep(current - 1); }
 
 function shake(el) {
   el.style.animation = 'none';
-  el.offsetHeight; /* reflow */
+  el.offsetHeight;
   el.style.animation = 'shake .3s ease';
   setTimeout(() => { el.style.animation = ''; }, 350);
 }
@@ -47,7 +38,6 @@ document.querySelectorAll('.choice-btn').forEach(btn => {
     const step = btn.closest('.quiz__step');
     step.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
-
     if (step.id === 'step1') state.type  = btn.dataset.val;
     if (step.id === 'step3') state.stage = btn.dataset.val;
   });
@@ -58,44 +48,35 @@ function showResult() {
   state.area   = parseInt(document.getElementById('areaSlider').value, 10);
   state.region = document.getElementById('regionSelect').value;
 
-  /* Derive recommendation */
-  let system, saving;
-  const cold = ['ural', 'sib'].includes(state.region);
+  let system;
+  const cold = ['ural', 'sib', 'north'].includes(state.region);
 
   if (state.stage === 'finished') {
-    system = `Децентрализованные рекуператоры с алмазным бурением (без вскрытия отделки). ` +
-             `Монтаж 1 день — система готова к использованию сразу.`;
+    system = `Децентрализованные рекуператоры с алмазным бурением (без вскрытия отделки). Монтаж 1 день — система готова сразу.`;
   } else if (state.stage === 'project' || state.stage === 'rough') {
-    system = `Централизованная приточно-вытяжная установка с рекуперацией тепла и ` +
-             `скрытыми воздуховодами в перекрытии. Оптимальное решение для комплексного климата.`;
+    system = `Централизованная приточно-вытяжная установка с рекуперацией тепла и скрытыми воздуховодами в перекрытии.`;
   } else {
     system = `Комбинированная система: рекуператоры в жилых комнатах + вытяжные клапаны в санузлах.`;
   }
-
   if (cold) system += ' Усиленная морозостойкость до −45 °С для вашего региона.';
 
-  /* Saving calculation: base 1200 rub/m2/year, 92% recovery => 0.92*1200*area / 12 per month */
   const annualSaving = Math.round(state.area * 1200 * 0.92 / 1000) * 1000;
-  const fmt = (n) => n.toLocaleString('ru-RU');
-  saving = `до ${fmt(annualSaving)} ₽ / сезон`;
+  const fmt = n => n.toLocaleString('ru-RU');
+  const saving = `до ${fmt(annualSaving)} ₽ / сезон`;
 
   document.getElementById('resultSystemText').textContent = system;
   document.getElementById('resultSaving').textContent     = saving;
 
-  /* Switch view */
   document.querySelectorAll('.quiz__step').forEach(s => s.classList.remove('active'));
   document.getElementById('quizResult').classList.add('active');
-
-  /* Update dots — all done */
   for (let i = 1; i <= 4; i++) document.getElementById('dot' + i).classList.add('done');
 
-  /* ROI Chart */
   const canvas = document.getElementById('roiChart');
   if (canvas && typeof Chart !== 'undefined') {
     if (canvas._chartInst) canvas._chartInst.destroy();
-    const years = [1, 2, 3, 4, 5, 6, 7];
+    const years   = [1, 2, 3, 4, 5, 6, 7];
     const savings = years.map(y => Math.round(annualSaving * y / 1000));
-    const cost = 85; // baseline 85k
+    const cost    = 85;
     canvas._chartInst = new Chart(canvas, {
       type: 'line',
       data: {
@@ -131,36 +112,35 @@ function showResult() {
   }
 }
 
-const TG_BOT_TOKEN = '8931211239:AAHx779bSDIBcde6Dlzn1lBcVvn-wKGJ7GQ';
-const TG_CHAT_ID   = '652328822';
-
+/* ── UTM source detection ── */
 function getUtmSource() {
   const p = new URLSearchParams(window.location.search);
   return p.get('utm_source') || p.get('utm_medium') || 'direct';
 }
 
+/* ── Telegram sender ── */
 async function sendToTelegram(data) {
   if (!TG_BOT_TOKEN || TG_BOT_TOKEN === 'YOUR_BOT_TOKEN') return false;
   const regionMap = {
-    moscow:'Москва / МО', spb:'Санкт-Петербург', center:'Центральная Россия',
-    south:'Юг России', volga:'Поволжье', ural:'Урал', sib:'Сибирь / Дальний Восток', other:'Другой регион'
+    msk:'Москва / МО', spb:'Санкт-Петербург', south:'Юг России',
+    ural:'Урал', sib:'Сибирь', north:'Крайний Север', other:'Другой регион'
   };
-  const typeMap = { flat:'Квартира', house:'Дом', office:'Офис / коммерция' };
-  const stageMap = { project:'Проект / черновая', rough:'Черновая отделка', finished:'Чистовая / жилая' };
+  const typeMap  = { apartment:'Квартира', house:'Дом', commercial:'Коммерция' };
+  const stageMap = { project:'Проект / нулевой цикл', rough:'Черновая отделка', finished:'Готовый ремонт' };
 
   const lines = [
     '🏠 Новая заявка AirBond',
     `👤 Имя: ${data.name || '—'}`,
     `📞 Телефон: ${data.phone || '—'}`,
   ];
-  if (data.type)   lines.push(`🏠 Тип: ${typeMap[data.type] || data.type}`);
+  if (data.type)   lines.push(`🏠 Тип объекта: ${typeMap[data.type]   || data.type}`);
   if (data.area)   lines.push(`📐 Площадь: ${data.area} м²`);
-  if (data.stage)  lines.push(`🔨 Стадия: ${stageMap[data.stage] || data.stage}`);
+  if (data.stage)  lines.push(`🔨 Стадия: ${stageMap[data.stage]  || data.stage}`);
   if (data.region) lines.push(`📍 Регион: ${regionMap[data.region] || data.region}`);
   if (data.saving) lines.push(`💰 Экономия: ${data.saving}`);
   lines.push(`📌 Источник: ${data.source || data.utm || 'direct'}`);
   lines.push(`🌐 Страница: ${window.location.href}`);
-  lines.push(`🕐 Время: ${new Date().toLocaleString('ru-RU')}`);
+  lines.push(`🕐 Время: ${new Date().toLocaleString('ru-RU', { timeZone: 'Asia/Barnaul' })}`);
 
   try {
     const r = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
@@ -180,32 +160,61 @@ async function sendToTelegram(data) {
   }
 }
 
-/* ── Lead modal ── */
+/* ═══════════════════════════════════════════
+   LEAD MODAL
+   ═══════════════════════════════════════════ */
 function openLeadModal(source) {
-  state.source = source || 'direct';
-  const modal = document.getElementById('leadModal');
-  const ctx   = document.getElementById('leadContext');
+  state.source = source || 'general';
+
+  const modal   = document.getElementById('leadModal');
+  const ctx     = document.getElementById('leadContext');
+  const success = document.getElementById('leadSuccess');
+  const btn     = document.getElementById('leadSubmitBtn');
+  const nameEl  = document.getElementById('leadName');
+  const phoneEl = document.getElementById('leadPhone');
+  const consent = document.getElementById('leadConsent');
+
+  success.style.display = 'none';
+  btn.style.display     = '';
+  btn.disabled          = false;
+  btn.textContent       = 'Отправить заявку';
+  nameEl.value  = '';
+  phoneEl.value = '';
+  consent.checked = false;
+  nameEl.classList.remove('error');
+  phoneEl.classList.remove('error');
+  consent.closest('.lead-modal__consent').style.outline = '';
 
   if (source === 'calc' && state.type && state.area) {
-    const sys  = document.getElementById('resultSystemText')?.textContent || '';
-    const sav  = document.getElementById('resultSaving')?.textContent || '';
+    const sys = document.getElementById('resultSystemText')?.textContent || '';
+    const sav = document.getElementById('resultSaving')?.textContent     || '';
     if (sys || sav) {
       ctx.style.display = 'block';
       ctx.innerHTML = (sys ? `<b>Система:</b> ${sys.slice(0,90)}…<br>` : '') +
                       (sav ? `<b>Экономия:</b> ${sav}` : '');
+    } else {
+      ctx.style.display = 'none';
     }
   } else {
-    ctx.style.display = 'none';
+    const labels = {
+      'portfolio':   '🏠 Хочу такой же объект',
+      'howwework':   '🔧 Запрос из «Как мы работаем»',
+      'installment': '💳 Рассрочка',
+      'final-cta':   '🎯 Финальная форма',
+    };
+    if (source && labels[source]) {
+      ctx.textContent   = labels[source];
+      ctx.style.display = 'block';
+    } else {
+      ctx.style.display = 'none';
+    }
   }
 
-  document.getElementById('leadSuccess').style.display = 'none';
-  document.getElementById('leadSubmitBtn').style.display = '';
-  document.getElementById('leadName').value  = '';
-  document.getElementById('leadPhone').value = '';
-  document.getElementById('leadConsent').checked = false;
+  modal.dataset.source = state.source;
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
+  setTimeout(() => nameEl.focus(), 100);
 }
 
 function closeLeadModal() {
@@ -216,33 +225,36 @@ function closeLeadModal() {
 }
 
 async function submitLead() {
-  const name    = document.getElementById('leadName').value.trim();
-  const phone   = document.getElementById('leadPhone').value.trim();
-  const consent = document.getElementById('leadConsent').checked;
   const nameEl  = document.getElementById('leadName');
   const phoneEl = document.getElementById('leadPhone');
+  const consent = document.getElementById('leadConsent');
+  const btn     = document.getElementById('leadSubmitBtn');
+  const success = document.getElementById('leadSuccess');
+
+  const name  = nameEl.value.trim();
+  const phone = phoneEl.value.trim();
 
   nameEl.classList.remove('error');
   phoneEl.classList.remove('error');
+  consent.closest('.lead-modal__consent').style.outline = '';
 
   let valid = true;
-  if (!name)    { nameEl.classList.add('error');  nameEl.focus(); valid = false; }
-  if (!phone || phone.replace(/\D/g,'').length < 11) {
+  if (name.length < 2)  { nameEl.classList.add('error');  if (valid) nameEl.focus();  valid = false; }
+  if (phone.replace(/\D/g, '').length < 11) {
     phoneEl.classList.add('error');
     if (valid) phoneEl.focus();
     valid = false;
   }
-  if (!consent) {
-    document.getElementById('leadConsent').closest('.lead-modal__consent').style.outline = '2px solid #c0392b';
+  if (!consent.checked) {
+    consent.closest('.lead-modal__consent').style.outline = '2px solid #c0392b';
     valid = false;
   }
   if (!valid) return;
 
-  const btn = document.getElementById('leadSubmitBtn');
-  btn.disabled = true;
+  btn.disabled    = true;
   btn.textContent = 'Отправляем…';
 
-  await sendToTelegram({
+  const ok = await sendToTelegram({
     name, phone,
     type:   state.type,
     area:   state.area,
@@ -253,11 +265,21 @@ async function submitLead() {
     utm:    getUtmSource(),
   });
 
-  /* Yandex.Metrika goal */
   if (typeof ym !== 'undefined') ym(window.YM_ID, 'reachGoal', 'lead_submit');
 
-  /* Redirect to thank-you page (URL-based Metrika goal) */
-  window.location.href = '/spasibo.html';
+  if (ok) {
+    btn.style.display     = 'none';
+    success.style.display = 'block';
+    setTimeout(closeLeadModal, 3500);
+  } else {
+    btn.disabled    = false;
+    btn.textContent = 'Отправить заявку';
+    const waText = encodeURIComponent(`Здравствуйте! Меня зовут ${name}, телефон ${phone}. Хочу узнать про вентиляцию.`);
+    if (confirm('Ошибка отправки. Открыть WhatsApp для связи?')) {
+      window.open(`https://wa.me/79029987030?text=${waText}`, '_blank');
+      closeLeadModal();
+    }
+  }
 }
 
 /* ── Phone mask ── */
@@ -276,9 +298,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (v.length >= 9) out += '-' + v.slice(9, 11);
     phoneEl.value = out;
   });
+});
 
-  /* Close modal on Escape */
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeLeadModal();
-  });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLeadModal();
+});
+
+document.addEventListener('click', e => {
+  if (e.target.matches('.lead-modal__backdrop')) closeLeadModal();
 });
