@@ -1,6 +1,6 @@
 /* AirBond — calculator.js */
 
-const state = { type: null, area: 60, stage: null, region: null };
+const state = { type: null, area: 60, stage: null, region: null, source: null };
 
 /* ── Step navigation ── */
 function showStep(n) {
@@ -149,18 +149,18 @@ async function sendToTelegram(data) {
   const stageMap = { project:'Проект / черновая', rough:'Черновая отделка', finished:'Чистовая / жилая' };
 
   const lines = [
-    '🏠 НОВАЯ ЗАЯВКА — AirBond',
-    '',
+    '🏠 Новая заявка AirBond',
     `👤 Имя: ${data.name || '—'}`,
-    `📱 Телефон: ${data.phone || '—'}`,
+    `📞 Телефон: ${data.phone || '—'}`,
   ];
   if (data.type)   lines.push(`🏠 Тип: ${typeMap[data.type] || data.type}`);
   if (data.area)   lines.push(`📐 Площадь: ${data.area} м²`);
   if (data.stage)  lines.push(`🔨 Стадия: ${stageMap[data.stage] || data.stage}`);
   if (data.region) lines.push(`📍 Регион: ${regionMap[data.region] || data.region}`);
   if (data.saving) lines.push(`💰 Экономия: ${data.saving}`);
-  lines.push(`📣 Источник: ${data.utm || 'direct'}`);
-  lines.push(`⏰ ${new Date().toLocaleString('ru-RU')}`);
+  lines.push(`📌 Источник: ${data.source || data.utm || 'direct'}`);
+  lines.push(`🌐 Страница: ${window.location.href}`);
+  lines.push(`🕐 Время: ${new Date().toLocaleString('ru-RU')}`);
 
   try {
     const r = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
@@ -182,6 +182,7 @@ async function sendToTelegram(data) {
 
 /* ── Lead modal ── */
 function openLeadModal(source) {
+  state.source = source || 'direct';
   const modal = document.getElementById('leadModal');
   const ctx   = document.getElementById('leadContext');
 
@@ -247,8 +248,8 @@ async function submitLead() {
     area:   state.area,
     stage:  state.stage,
     region: state.region,
-    system: document.getElementById('resultSystemText')?.textContent || '',
     saving: document.getElementById('resultSaving')?.textContent || '',
+    source: state.source,
     utm:    getUtmSource(),
   });
 
