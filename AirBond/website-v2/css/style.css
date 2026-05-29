@@ -4,8 +4,8 @@
 section[id], footer[id] {
   scroll-margin-top: 116px;
 }
-/* Reduce top padding so content starts close to nav bar */
-section { padding-top: 48px !important; padding-bottom: 64px !important; }
+/* Reduce top/bottom padding for inner sections (not hero) */
+section:not(.hero) { padding-top: 48px !important; padding-bottom: 64px !important; }
 
 :root {
   /* Eco palette */
