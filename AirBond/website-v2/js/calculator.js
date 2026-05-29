@@ -95,7 +95,7 @@ function showResult() {
     if (canvas._chartInst) canvas._chartInst.destroy();
     const years = [1, 2, 3, 4, 5, 6, 7];
     const savings = years.map(y => Math.round(annualSaving * y / 1000));
-    const cost = Math.round(85 / 1); // baseline 85k
+    const cost = 85; // baseline 85k
     canvas._chartInst = new Chart(canvas, {
       type: 'line',
       data: {
@@ -131,15 +131,13 @@ function showResult() {
   }
 }
 
-/* ═══════════════════════════════════════════════════
-   TELEGRAM CONFIG — replace before launch
-   1) Create a bot via @BotFather → get BOT_TOKEN
-   2) Send any message to your bot, then open:
-      https://api.telegram.org/bot<TOKEN>/getUpdates
-      to find your CHAT_ID
-   ═══════════════════════════════════════════════════ */
 const TG_BOT_TOKEN = '8931211239:AAHx779bSDIBcde6Dlzn1lBcVvn-wKGJ7GQ';
 const TG_CHAT_ID   = '652328822';
+
+function getUtmSource() {
+  const p = new URLSearchParams(window.location.search);
+  return p.get('utm_source') || p.get('utm_medium') || 'direct';
+}
 
 async function sendToTelegram(data) {
   if (!TG_BOT_TOKEN || TG_BOT_TOKEN === 'YOUR_BOT_TOKEN') return false;
@@ -162,7 +160,8 @@ async function sendToTelegram(data) {
   if (data.region) lines.push(`📍 Регион: ${regionMap[data.region] || data.region}`);
   if (data.system) lines.push(`\n⚙️ Рекомендация: ${data.system.slice(0, 120)}...`);
   if (data.saving) lines.push(`💰 Расчётная экономия: ${data.saving}`);
-  lines.push(`\n⏰ ${new Date().toLocaleString('ru-RU')}`);
+  lines.push(`\n📣 Источник: ${data.utm || 'direct'}`);
+  lines.push(`⏰ ${new Date().toLocaleString('ru-RU')}`);
 
   try {
     const r = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
@@ -243,15 +242,14 @@ async function submitLead() {
     region: state.region,
     system: document.getElementById('resultSystemText')?.textContent || '',
     saving: document.getElementById('resultSaving')?.textContent || '',
+    utm:    getUtmSource(),
   });
 
   /* Yandex.Metrika goal */
   if (typeof ym !== 'undefined') ym(window.YM_ID, 'reachGoal', 'lead_submit');
 
-  btn.style.display = 'none';
-  document.getElementById('leadSuccess').style.display = 'block';
-
-  setTimeout(closeLeadModal, 3500);
+  /* Redirect to thank-you page (URL-based Metrika goal) */
+  window.location.href = '/spasibo.html';
 }
 
 /* ── Phone mask ── */
