@@ -1,13 +1,10 @@
-/* AirBond — calculator.js  (clean, authoritative lead modal) */
+/* AirBond — calculator.js */
 
-/* ═══════════════════════════════════════════
-   Telegram config
-   ═══════════════════════════════════════════ */
 const TG_BOT_TOKEN = '8931211239:AAHx779bSDIBcde6Dlzn1lBcVvn-wKGJ7GQ';
 const TG_CHAT_ID   = '652328822';
 
 /* ── Quiz state ── */
-const state = { type: null, area: 60, stage: null, region: null };
+const state = { type: null, area: 60, stage: null, region: null, source: null };
 
 /* ── Step navigation ── */
 function showStep(n) {
@@ -30,7 +27,7 @@ function prevStep(current) { showStep(current - 1); }
 
 function shake(el) {
   el.style.animation = 'none';
-  el.offsetHeight; // reflow
+  el.offsetHeight;
   el.style.animation = 'shake .3s ease';
   setTimeout(() => { el.style.animation = ''; }, 350);
 }
@@ -63,7 +60,6 @@ function showResult() {
   }
   if (cold) system += ' Усиленная морозостойкость до −45 °С для вашего региона.';
 
-  /* Saving calculation */
   const annualSaving = Math.round(state.area * 1200 * 0.92 / 1000) * 1000;
   const fmt = n => n.toLocaleString('ru-RU');
   const saving = `до ${fmt(annualSaving)} ₽ / сезон`;
@@ -75,13 +71,12 @@ function showResult() {
   document.getElementById('quizResult').classList.add('active');
   for (let i = 1; i <= 4; i++) document.getElementById('dot' + i).classList.add('done');
 
-  /* ROI Chart */
   const canvas = document.getElementById('roiChart');
   if (canvas && typeof Chart !== 'undefined') {
     if (canvas._chartInst) canvas._chartInst.destroy();
     const years   = [1, 2, 3, 4, 5, 6, 7];
     const savings = years.map(y => Math.round(annualSaving * y / 1000));
-    const cost    = 85; // baseline 85k
+    const cost    = 85;
     canvas._chartInst = new Chart(canvas, {
       type: 'line',
       data: {
@@ -117,6 +112,12 @@ function showResult() {
   }
 }
 
+/* ── UTM source detection ── */
+function getUtmSource() {
+  const p = new URLSearchParams(window.location.search);
+  return p.get('utm_source') || p.get('utm_medium') || 'direct';
+}
+
 /* ── Telegram sender ── */
 async function sendToTelegram(data) {
   if (!TG_BOT_TOKEN || TG_BOT_TOKEN === 'YOUR_BOT_TOKEN') return false;
@@ -128,33 +129,43 @@ async function sendToTelegram(data) {
   const stageMap = { project:'Проект / нулевой цикл', rough:'Черновая отделка', finished:'Готовый ремонт' };
 
   const lines = [
-    '🏠 <b>Новая заявка — AirBond</b>',
-    '',
+    '🏠 Новая заявка AirBond',
     `👤 Имя: ${data.name || '—'}`,
-    `📱 Телефон: ${data.phone || '—'}`,
+    `📞 Телефон: ${data.phone || '—'}`,
   ];
   if (data.type)   lines.push(`🏠 Тип объекта: ${typeMap[data.type]   || data.type}`);
   if (data.area)   lines.push(`📐 Площадь: ${data.area} м²`);
   if (data.stage)  lines.push(`🔨 Стадия: ${stageMap[data.stage]  || data.stage}`);
   if (data.region) lines.push(`📍 Регион: ${regionMap[data.region] || data.region}`);
-  if (data.system) lines.push(`\n⚙️ Рекомендация: ${data.system.slice(0,120)}…`);
   if (data.saving) lines.push(`💰 Экономия: ${data.saving}`);
-  lines.push(`\n⏰ ${new Date().toLocaleString('ru-RU', { timeZone: 'Asia/Barnaul' })}`);
+  lines.push(`📌 Источник: ${data.source || data.utm || 'direct'}`);
+  lines.push(`🌐 Страница: ${window.location.href}`);
+  lines.push(`🕐 Время: ${new Date().toLocaleString('ru-RU', { timeZone: 'Asia/Barnaul' })}`);
 
   try {
     const r = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: TG_CHAT_ID, text: lines.join('\n'), parse_mode: 'HTML' })
+      body: JSON.stringify({ chat_id: TG_CHAT_ID, text: lines.join('\n') }),
+      keepalive: true,
     });
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      console.error('Telegram API error:', r.status, err.description);
+    }
     return r.ok;
-  } catch { return false; }
+  } catch (e) {
+    console.error('Telegram fetch failed:', e);
+    return false;
+  }
 }
 
 /* ═══════════════════════════════════════════
-   LEAD MODAL — single authoritative source
+   LEAD MODAL
    ═══════════════════════════════════════════ */
 function openLeadModal(source) {
+  state.source = source || 'general';
+
   const modal   = document.getElementById('leadModal');
   const ctx     = document.getElementById('leadContext');
   const success = document.getElementById('leadSuccess');
@@ -163,7 +174,6 @@ function openLeadModal(source) {
   const phoneEl = document.getElementById('leadPhone');
   const consent = document.getElementById('leadConsent');
 
-  /* Reset */
   success.style.display = 'none';
   btn.style.display     = '';
   btn.disabled          = false;
@@ -175,7 +185,6 @@ function openLeadModal(source) {
   phoneEl.classList.remove('error');
   consent.closest('.lead-modal__consent').style.outline = '';
 
-  /* Context chip */
   if (source === 'calc' && state.type && state.area) {
     const sys = document.getElementById('resultSystemText')?.textContent || '';
     const sav = document.getElementById('resultSaving')?.textContent     || '';
@@ -201,7 +210,7 @@ function openLeadModal(source) {
     }
   }
 
-  modal.dataset.source = source || 'general';
+  modal.dataset.source = state.source;
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
@@ -251,11 +260,11 @@ async function submitLead() {
     area:   state.area,
     stage:  state.stage,
     region: state.region,
-    system: document.getElementById('resultSystemText')?.textContent || '',
-    saving: document.getElementById('resultSaving')?.textContent     || '',
+    saving: document.getElementById('resultSaving')?.textContent || '',
+    source: state.source,
+    utm:    getUtmSource(),
   });
 
-  /* Yandex.Metrika goal */
   if (typeof ym !== 'undefined') ym(window.YM_ID, 'reachGoal', 'lead_submit');
 
   if (ok) {
@@ -263,7 +272,6 @@ async function submitLead() {
     success.style.display = 'block';
     setTimeout(closeLeadModal, 3500);
   } else {
-    /* Fallback — WhatsApp */
     btn.disabled    = false;
     btn.textContent = 'Отправить заявку';
     const waText = encodeURIComponent(`Здравствуйте! Меня зовут ${name}, телефон ${phone}. Хочу узнать про вентиляцию.`);
@@ -278,7 +286,6 @@ async function submitLead() {
 document.addEventListener('DOMContentLoaded', () => {
   const phoneEl = document.getElementById('leadPhone');
   if (!phoneEl) return;
-
   phoneEl.addEventListener('input', () => {
     let v = phoneEl.value.replace(/\D/g, '');
     if (v.startsWith('8')) v = '7' + v.slice(1);
@@ -293,12 +300,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-/* ── Escape closes modal (single listener) ── */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeLeadModal();
 });
 
-/* ── Close modal on backdrop click ── */
 document.addEventListener('click', e => {
   if (e.target.matches('.lead-modal__backdrop')) closeLeadModal();
 });
