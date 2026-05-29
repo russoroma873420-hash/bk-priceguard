@@ -149,28 +149,35 @@ async function sendToTelegram(data) {
   const stageMap = { project:'Проект / черновая', rough:'Черновая отделка', finished:'Чистовая / жилая' };
 
   const lines = [
-    '🏠 <b>Новая заявка — AirBond</b>',
+    '🏠 НОВАЯ ЗАЯВКА — AirBond',
     '',
     `👤 Имя: ${data.name || '—'}`,
     `📱 Телефон: ${data.phone || '—'}`,
   ];
-  if (data.type)   lines.push(`🏠 Тип объекта: ${typeMap[data.type] || data.type}`);
+  if (data.type)   lines.push(`🏠 Тип: ${typeMap[data.type] || data.type}`);
   if (data.area)   lines.push(`📐 Площадь: ${data.area} м²`);
   if (data.stage)  lines.push(`🔨 Стадия: ${stageMap[data.stage] || data.stage}`);
   if (data.region) lines.push(`📍 Регион: ${regionMap[data.region] || data.region}`);
-  if (data.system) lines.push(`\n⚙️ Рекомендация: ${data.system.slice(0, 120)}...`);
-  if (data.saving) lines.push(`💰 Расчётная экономия: ${data.saving}`);
-  lines.push(`\n📣 Источник: ${data.utm || 'direct'}`);
+  if (data.saving) lines.push(`💰 Экономия: ${data.saving}`);
+  lines.push(`📣 Источник: ${data.utm || 'direct'}`);
   lines.push(`⏰ ${new Date().toLocaleString('ru-RU')}`);
 
   try {
     const r = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: TG_CHAT_ID, text: lines.join('\n'), parse_mode: 'HTML' })
+      body: JSON.stringify({ chat_id: TG_CHAT_ID, text: lines.join('\n') }),
+      keepalive: true,
     });
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      console.error('Telegram API error:', r.status, err.description);
+    }
     return r.ok;
-  } catch { return false; }
+  } catch (e) {
+    console.error('Telegram fetch failed:', e);
+    return false;
+  }
 }
 
 /* ── Lead modal ── */
